@@ -4,9 +4,10 @@ import pandas as pd
 import networkx as nx
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
+import chardet
 
 
-scenario_tree = "9Scen"     # Options: 4Scen, 9Scen, AllScen
+scenario_tree = "FuelScen"     # Options: 4Scen, 9Scen, AllScen
 
 generated_paths_file = "generated_paths_2_modes.csv"     # Select the current created paths file
 
@@ -15,13 +16,21 @@ show_plot = True # Set to True to show the plot
 # Load the pickle file
 
 file_path = r"Data//output//SP_" + scenario_tree + ".pickle"
+file_path = "Data/Output/FuelScen_carbontaxbase_SP_results.pickle"
 
 with open(file_path, 'rb') as file:
     output_data = pickle.load(file)
     
 generated_paths_file = r"Data//SPATIAL//" + generated_paths_file
 
-generated_paths = pd.read_csv(generated_paths_file)
+
+with open(generated_paths_file, 'rb') as file:
+    raw_data = file.read(10000)  # Read a sample
+    detected = chardet.detect(raw_data)
+    print(detected)
+
+generated_paths = pd.read_csv(generated_paths_file, encoding='ISO-8859-1')
+
 
 
 # Access the extracted path flows with path weights
