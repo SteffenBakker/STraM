@@ -3,85 +3,40 @@ Doing the following analysis:
 FuelScen_carbontaxbase_stp2034
 single time period:  2034
 ----------------------------
------
-Constructing full SP model...
-Done constructing model.
-Time used constructing the model: 128.41084456443787
-----------
-Solving model...
-Set parameter Username
-Academic license - for non-commercial use only - expires 2024-11-15
-Read LP format model from file C:\Users\steffejb\OneDrive - NTNU\Work\GitHub\STraM_ntnu_development\temp\pyomo\tmpy0objk4j.pyomo.lp
-Reading time = 13.44 seconds
-x2706869: 4376351 rows, 1760933 columns, 13214585 nonzeros
-Set parameter FeasibilityTol to value 0.01
-Set parameter MIPGap to value 0.002
-Gurobi Optimizer version 9.5.0 build v9.5.0rc5 (win64)
-Thread count: 4 physical cores, 8 logical processors, using up to 8 threads
-Optimize a model with 4376351 rows, 1760933 columns and 13214585 nonzeros
-Model fingerprint: 0xc2d37c92
-Variable types: 1760627 continuous, 306 integer (306 binary)
-Coefficient statistics:
-  Matrix range     [6e-06, 1e+03]
-  Objective range  [8e-02, 3e-01]
-  Bounds range     [1e+00, 1e+00]
-  RHS range        [1e-03, 9e+01]
-Presolve removed 4336607 rows and 1441638 columns (presolve time = 5s) ...
-Presolve removed 4347483 rows and 1546209 columns (presolve time = 10s) ...
-Presolve removed 4347659 rows and 1546367 columns (presolve time = 15s) ...
-Presolve removed 4347659 rows and 1546367 columns
-Presolve time: 15.60s
-Presolved: 28692 rows, 214566 columns, 2732373 nonzeros
-Variable types: 214548 continuous, 18 integer (18 binary)
-
-Deterministic concurrent LP optimizer: primal simplex, dual simplex, and barrier
-Showing barrier log only...
-
-Root barrier log...
-
-Ordering time: 0.16s
-
-Barrier statistics:
- AA' NZ     : 1.265e+06
- Factor NZ  : 3.009e+06 (roughly 120 MB of memory)
- Factor Ops : 5.925e+08 (less than 1 second per iteration)
- Threads    : 2
-
-                  Objective                Residual
-Iter       Primal          Dual         Primal    Dual     Compl     Time
-   0   1.65115853e+09 -4.19553554e+08  3.71e+07 2.50e+00  1.34e+05    21s
-   1   8.05406988e+08 -2.69024276e+08  1.81e+07 3.99e+00  6.55e+04    21s
-   2   2.28394319e+08 -1.34608555e+08  4.86e+06 1.66e+00  1.85e+04    21s
-   3   4.11902633e+07 -5.01545648e+07  6.30e+05 3.36e-01  2.68e+03    21s
-   4   2.37121026e+07 -3.62131738e+07  3.07e+05 2.30e-01  1.38e+03    21s
-
-Barrier performed 4 iterations in 21.31 seconds (23.96 work units)
-Barrier solve interrupted - model solved by another algorithm
-
-Concurrent spin time: 0.07s
-
-Solved with dual simplex
-
-Root relaxation: objective 4.940986e+02, 21712 iterations, 2.94 seconds (2.27 work units)
-
-    Nodes    |    Current Node    |     Objective Bounds      |     Work
- Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
-
-     0     0  494.09860    0    1          -  494.09860      -     -   21s
-H    0     0                     494.1320182  494.09860  0.01%     -   22s
-
-Explored 1 nodes (21712 simplex iterations) in 22.47 seconds (24.31 work units)
-Thread count was 8 (of 8 available processors)
-
-Solution count 1: 494.132 
-
-Optimal solution found (tolerance 2.00e-03)
-Warning: max constraint violation (7.6120e-02) exceeds tolerance
-Warning: max bound violation (6.4040e-02) exceeds tolerance
-Best objective 4.941320181927e+02, best bound 4.940985971774e+02, gap 0.0068%
-the solution is feasible and optimal
-Solution time: 47.13422632217407
-Done solving model.
-Time used solving the model: 233.2254457473755
-----------Dumping data in pickle file...done.
-Dumping results in pickle file.....done.
+Reading data...
+Number of scenarios:  9
+Number of scenarios:  1
+Reading and constructing data
+Function construct_sets Took 0.0012 seconds
+Function construct_network Took 0.0046 seconds
+Transport demand in the base year 2018 (in MTonnes):
+             product  tot_weight
+0           Dry bulk       94.86
+1   Container (fast)        4.07
+2   Container (slow)        9.23
+3  Break bulk (fast)       11.61
+4  Break bulk (slow)       15.37
+5           Neo bulk       19.28
+Function construct_ODD Took 0.5020 seconds
+Function construct_vehicles Took 0.5377 seconds
+Function construct_emission_transfer Took 0.1498 seconds
+Function construct_costs Took 2.4986 seconds
+Function construct_time_value Took 0.0011 seconds
+Function construct_investments Took 0.0087 seconds
+Function construct_charging_edges Took 0.1875 seconds
+Function construct_tech_readiness Took 0.0050 seconds
+Function construct_path_generation Took 0.1568 seconds
+Function construct_param2 Took 0.0607 seconds
+Function combined_sets Took 0.4814 seconds
+Function combined_sets Took 0.4380 seconds
+Done reading data.
+Time used reading the base data: 16.54598331451416
+Function combined_sets Took 0.4402 seconds
+Solving the first time period for initialization purposes...
+Function combined_sets Took 0.1564 seconds
+ERROR: Rule failed when generating expression for Constraint Flow with index
+('Narvik', 'Hamburg', 'Dry bulk', 2034, 'OO'): KeyError: "Index '(3, 'Dry
+bulk', 2034, 'OO')' is not valid for indexed component 'h_path'"
+ERROR: Constructing component 'Flow' from data=None failed:
+        KeyError: "Index '(3, 'Dry bulk', 2034, 'OO')' is not valid for
+        indexed component 'h_path'"
