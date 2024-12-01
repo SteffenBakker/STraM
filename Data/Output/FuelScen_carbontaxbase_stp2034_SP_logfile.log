@@ -4,11 +4,9 @@ FuelScen_carbontaxbase_stp2034
 single time period:  2034
 ----------------------------
 Reading data...
-Number of scenarios:  9
-Number of scenarios:  1
 Reading and constructing data
-Function construct_sets Took 0.0012 seconds
-Function construct_network Took 0.0046 seconds
+Function construct_sets Took 0.0108 seconds
+Function construct_network Took 0.0341 seconds
 Transport demand in the base year 2018 (in MTonnes):
              product  tot_weight
 0           Dry bulk       94.86
@@ -17,26 +15,104 @@ Transport demand in the base year 2018 (in MTonnes):
 3  Break bulk (fast)       11.61
 4  Break bulk (slow)       15.37
 5           Neo bulk       19.28
-Function construct_ODD Took 0.5020 seconds
-Function construct_vehicles Took 0.5377 seconds
-Function construct_emission_transfer Took 0.1498 seconds
-Function construct_costs Took 2.4986 seconds
-Function construct_time_value Took 0.0011 seconds
-Function construct_investments Took 0.0087 seconds
-Function construct_charging_edges Took 0.1875 seconds
-Function construct_tech_readiness Took 0.0050 seconds
-Function construct_path_generation Took 0.1568 seconds
-Function construct_param2 Took 0.0607 seconds
-Function combined_sets Took 0.4814 seconds
-Function combined_sets Took 0.4380 seconds
+Function construct_ODD Took 2.3581 seconds
+Function construct_vehicles Took 2.6370 seconds
+Function construct_emission_transfer Took 0.7322 seconds
+Function construct_costs Took 11.0334 seconds
+Function construct_time_value Took 0.0052 seconds
+Function construct_investments Took 0.0282 seconds
+Function construct_charging_edges Took 0.8730 seconds
+Function construct_tech_readiness Took 0.0200 seconds
+Function construct_path_generation Took 0.7410 seconds
+Function construct_param2 Took 0.1921 seconds
+Function combined_sets Took 1.6916 seconds
+Function combined_sets Took 1.3273 seconds
 Done reading data.
-Time used reading the base data: 16.54598331451416
-Function combined_sets Took 0.4402 seconds
-Solving the first time period for initialization purposes...
-Function combined_sets Took 0.1564 seconds
-ERROR: Rule failed when generating expression for Constraint Flow with index
-('Narvik', 'Hamburg', 'Dry bulk', 2034, 'OO'): KeyError: "Index '(3, 'Dry
-bulk', 2034, 'OO')' is not valid for indexed component 'h_path'"
-ERROR: Constructing component 'Flow' from data=None failed:
-        KeyError: "Index '(3, 'Dry bulk', 2034, 'OO')' is not valid for
-        indexed component 'h_path'"
+Time used reading the base data: 68.6263599395752
+Function combined_sets Took 1.6623 seconds
+-----
+Constructing full SP model...
+Done constructing model.
+Time used constructing the model: 222.55953192710876
+----------
+Solving model...
+Set parameter Username
+Academic license - for non-commercial use only - expires 2025-03-01
+Read LP format model from file C:\Users\Sander\Documents\Code\Github\Sander\STraM_ntnu_development\temp\pyomo\tmpf6umbx23.pyomo.lp
+Reading time = 31.44 seconds
+x1: 4376350 rows, 1760932 columns, 13215520 nonzeros
+Set parameter FeasibilityTol to value 0.01
+Set parameter MIPGap to value 0.002
+Gurobi Optimizer version 11.0.0 build v11.0.0rc2 (win64 - Windows 11+.0 (22631.2))
+
+CPU model: Intel(R) Core(TM) i7-10510U CPU @ 1.80GHz, instruction set [SSE2|AVX|AVX2]
+Thread count: 4 physical cores, 8 logical processors, using up to 8 threads
+
+Optimize a model with 4376350 rows, 1760932 columns and 13215520 nonzeros
+Model fingerprint: 0x5b98497f
+Variable types: 1760626 continuous, 306 integer (306 binary)
+Coefficient statistics:
+  Matrix range     [6e-06, 1e+03]
+  Objective range  [8e-02, 3e-01]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e-03, 9e+01]
+Presolve removed 4335724 rows and 1390526 columns (presolve time = 5s) ...
+Presolve removed 4336606 rows and 1514358 columns
+Presolve time: 7.05s
+Presolved: 39744 rows, 246574 columns, 3295503 nonzeros
+Variable types: 246556 continuous, 18 integer (18 binary)
+Deterministic concurrent LP optimizer: primal simplex, dual simplex, and barrier
+Showing barrier log only...
+
+Root barrier log...
+
+Ordering time: 0.83s
+
+Barrier statistics:
+ AA' NZ     : 1.310e+06
+ Factor NZ  : 3.078e+06 (roughly 130 MB of memory)
+ Factor Ops : 5.724e+08 (less than 1 second per iteration)
+ Threads    : 2
+
+                  Objective                Residual
+Iter       Primal          Dual         Primal    Dual     Compl     Time
+   0   1.76706549e+09 -4.35068231e+08  3.94e+07 2.58e+00  1.43e+05    38s
+   1   8.54196163e+08 -2.63816101e+08  1.90e+07 3.05e+00  6.97e+04    39s
+   2   1.90187472e+08 -1.18778858e+08  3.97e+06 1.24e+00  1.53e+04    39s
+   3   3.56414090e+07 -5.16933365e+07  5.15e+05 3.31e-01  2.17e+03    40s
+
+Barrier performed 3 iterations in 40.03 seconds (14.43 work units)
+Barrier solve interrupted - model solved by another algorithm
+
+Concurrent spin time: 0.21s
+
+Solved with dual simplex
+
+Root simplex log...
+
+Iteration    Objective       Primal Inf.    Dual Inf.      Time
+   22499    5.1504957e+02   0.000000e+00   0.000000e+00     40s
+
+Root relaxation: objective 5.150496e+02, 22499 iterations, 8.92 seconds (2.39 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0  515.04957    0    1          -  515.04957      -     -   40s
+H    0     0                     515.0714340  515.04957  0.00%     -   41s
+
+Explored 1 nodes (22499 simplex iterations) in 43.85 seconds (14.84 work units)
+Thread count was 8 (of 8 available processors)
+
+Solution count 2: 515.071 515.071 
+
+Optimal solution found (tolerance 2.00e-03)
+Warning: max constraint violation (7.6120e-02) exceeds tolerance
+Warning: max bound violation (6.4040e-02) exceeds tolerance
+Best objective 5.150714339894e+02, best bound 5.150714339894e+02, gap 0.0000%
+the solution is feasible and optimal
+Solution time: 99.2830605506897
+Done solving model.
+Time used solving the model: 330.4168872833252
+----------Dumping data in pickle file...done.
+Dumping results in pickle file.....done.
