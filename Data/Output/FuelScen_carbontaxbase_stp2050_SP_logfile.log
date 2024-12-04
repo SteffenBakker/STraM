@@ -3,89 +3,116 @@ Doing the following analysis:
 FuelScen_carbontaxbase_stp2050
 single time period:  2050
 ----------------------------
+Reading data...
+Reading and constructing data
+Function construct_sets Took 0.0090 seconds
+Function construct_network Took 0.0265 seconds
+Transport demand in the base year 2018 (in MTonnes):
+             product  tot_weight
+0           Dry bulk       94.86
+1   Container (fast)        4.07
+2   Container (slow)        9.23
+3  Break bulk (fast)       11.61
+4  Break bulk (slow)       15.37
+5           Neo bulk       19.28
+Function construct_ODD Took 2.2852 seconds
+Function construct_vehicles Took 1.6783 seconds
+Function construct_emission_transfer Took 0.4984 seconds
+Function construct_costs Took 8.3228 seconds
+Function construct_time_value Took 0.0068 seconds
+Function construct_investments Took 0.0265 seconds
+Function construct_charging_edges Took 0.5849 seconds
+Function construct_tech_readiness Took 0.0148 seconds
+Function construct_path_generation Took 0.5460 seconds
+Function construct_param2 Took 0.1915 seconds
+Function combined_sets Took 1.5311 seconds
+Function combined_sets Took 1.0701 seconds
+Done reading data.
+Time used reading the base data: 49.80946707725525
+Function combined_sets Took 1.4475 seconds
 -----
 Constructing full SP model...
 Done constructing model.
-Time used constructing the model: 303.0603446960449
+Time used constructing the model: 235.8050742149353
 ----------
 Solving model...
 Set parameter Username
-Academic license - for non-commercial use only - expires 2024-11-15
-Read LP format model from file C:\Users\steffejb\OneDrive - NTNU\Work\GitHub\STraM_ntnu_development\temp\pyomo\tmpq5gcmxhd.pyomo.lp
-Reading time = 18.34 seconds
-x2706869: 4376504 rows, 1760933 columns, 13217339 nonzeros
+Academic license - for non-commercial use only - expires 2025-03-01
+Read LP format model from file C:\Users\Sander\Documents\Code\Github\Sander\STraM_ntnu_development\temp\pyomo\tmpjd5vb4qb.pyomo.lp
+Reading time = 27.78 seconds
+x1: 4376503 rows, 1760932 columns, 13218274 nonzeros
 Set parameter FeasibilityTol to value 0.01
 Set parameter MIPGap to value 0.002
-Gurobi Optimizer version 9.5.0 build v9.5.0rc5 (win64)
+Gurobi Optimizer version 11.0.0 build v11.0.0rc2 (win64 - Windows 11+.0 (22631.2))
+
+CPU model: Intel(R) Core(TM) i7-10510U CPU @ 1.80GHz, instruction set [SSE2|AVX|AVX2]
 Thread count: 4 physical cores, 8 logical processors, using up to 8 threads
-Optimize a model with 4376504 rows, 1760933 columns and 13217339 nonzeros
-Model fingerprint: 0x68bc47e1
-Variable types: 1760627 continuous, 306 integer (306 binary)
+
+Optimize a model with 4376503 rows, 1760932 columns and 13218274 nonzeros
+Model fingerprint: 0xf3694895
+Variable types: 1760626 continuous, 306 integer (306 binary)
 Coefficient statistics:
   Matrix range     [6e-06, 1e+03]
   Objective range  [8e-02, 3e-01]
   Bounds range     [1e+00, 1e+00]
   RHS range        [1e-03, 9e+01]
-Presolve removed 4335734 rows and 1439614 columns (presolve time = 5s) ...
-Presolve removed 4346235 rows and 1463845 columns (presolve time = 10s) ...
-Presolve removed 4346736 rows and 1542468 columns (presolve time = 15s) ...
-Presolve removed 4346777 rows and 1542810 columns (presolve time = 20s) ...
-Presolve removed 4346777 rows and 1542810 columns (presolve time = 25s) ...
-Presolve removed 4346777 rows and 1542810 columns
-Presolve time: 25.07s
-Presolved: 29727 rows, 218123 columns, 2821932 nonzeros
-Variable types: 218103 continuous, 20 integer (20 binary)
-
+Presolve removed 4335733 rows and 1439613 columns (presolve time = 5s) ...
+Presolve removed 4335733 rows and 1512334 columns
+Presolve time: 5.71s
+Presolved: 40770 rows, 248598 columns, 3350826 nonzeros
+Variable types: 248564 continuous, 34 integer (34 binary)
 Deterministic concurrent LP optimizer: primal simplex, dual simplex, and barrier
 Showing barrier log only...
 
 Root barrier log...
 
-Ordering time: 0.52s
+Ordering time: 0.78s
 
 Barrier statistics:
- AA' NZ     : 1.331e+06
- Factor NZ  : 3.274e+06 (roughly 130 MB of memory)
- Factor Ops : 7.015e+08 (less than 1 second per iteration)
+ AA' NZ     : 1.385e+06
+ Factor NZ  : 3.435e+06 (roughly 130 MB of memory)
+ Factor Ops : 6.995e+08 (less than 1 second per iteration)
  Threads    : 2
 
                   Objective                Residual
 Iter       Primal          Dual         Primal    Dual     Compl     Time
-   0   7.80162336e+09 -4.86290352e+09  3.47e+08 1.99e+00  6.46e+06    35s
-   1   3.28133630e+09 -4.00504301e+09  1.45e+08 4.64e+01  2.78e+06    36s
-   2   1.21678184e+09 -1.89304982e+09  5.16e+07 1.32e+01  1.00e+06    36s
-   3   1.43732310e+08 -9.10165563e+08  3.27e+06 2.69e+00  7.07e+04    37s
-   4   8.25527927e+07 -6.93928668e+08  1.01e+06 1.89e+00  2.59e+04    37s
-   5   5.53616469e+07 -1.82687981e+08  1.91e+05 2.58e-01  5.09e+03    38s
-   6   4.11035801e+07 -1.39777301e+08  9.63e+04 1.70e-01  2.79e+03    38s
+   0   1.11836254e+10 -5.53714190e+09  4.98e+08 2.04e+00  8.79e+06    39s
+   1   4.14180676e+09 -4.48894291e+09  1.83e+08 4.32e+01  3.34e+06    39s
+   2   1.70298283e+09 -1.97904690e+09  7.25e+07 9.21e+00  1.37e+06    40s
+   3   1.71898606e+08 -1.17405878e+09  3.32e+06 2.70e+00  7.20e+04    40s
 
-Barrier performed 6 iterations in 37.99 seconds (25.24 work units)
+Barrier performed 3 iterations in 40.30 seconds (14.63 work units)
 Barrier solve interrupted - model solved by another algorithm
 
-Concurrent spin time: 0.16s
+Concurrent spin time: 0.53s
 
 Solved with dual simplex
 
-Root relaxation: objective 4.756983e+02, 23749 iterations, 7.51 seconds (2.63 work units)
+Root simplex log...
+
+Iteration    Objective       Primal Inf.    Dual Inf.      Time
+   23140    4.7320626e+02   0.000000e+00   0.000000e+00     41s
+
+Root relaxation: objective 4.732063e+02, 23140 iterations, 9.26 seconds (2.35 work units)
 
     Nodes    |    Current Node    |     Objective Bounds      |     Work
  Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
 
-     0     0  475.69826    0    2          -  475.69826      -     -   38s
-H    0     0                     475.7260090  475.69826  0.01%     -   39s
+     0     0  473.20626    0    2          -  473.20626      -     -   41s
+H    0     0                     473.2347880  473.20626  0.01%     -   42s
 
-Explored 1 nodes (23749 simplex iterations) in 40.39 seconds (25.47 work units)
+Explored 1 nodes (23140 simplex iterations) in 44.30 seconds (15.04 work units)
 Thread count was 8 (of 8 available processors)
 
-Solution count 1: 475.726 
+Solution count 2: 473.235 473.235 
 
 Optimal solution found (tolerance 2.00e-03)
 Warning: max constraint violation (7.9710e-02) exceeds tolerance
 Warning: max bound violation (7.9009e-02) exceeds tolerance
-Best objective 4.757260090209e+02, best bound 4.757260090209e+02, gap 0.0000%
+Best objective 4.732347880410e+02, best bound 4.732347880409e+02, gap 0.0000%
 the solution is feasible and optimal
-Solution time: 90.8466579914093
+Solution time: 96.6317892074585
 Done solving model.
-Time used solving the model: 360.0762734413147
+Time used solving the model: 330.07895016670227
 ----------Dumping data in pickle file...done.
 Dumping results in pickle file.....done.

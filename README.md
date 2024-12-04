@@ -9,6 +9,23 @@ STraM is available in the Python-based, open-source optimization modelling langu
 Other python package dependencies can be found in the file requirements.txt.
 
 To download, you need to install Git and clone the repository. 
+## To activate venv (for Windows):
+Before starting, make sure you have installed and updated pip
+
+1) Download Python 3.10.4 
+2) Create virtual environment: py -3.10 -m venv env
+3) Activate virutal environment: .\env\Scripts\activate
+4) Install packages: pip install -r requirements.txt
+5) Verify installations: python -m pip list
+
+## To activate venv (for Mac or linux):
+Before starting, make sure you have installed and updated pip
+
+1) Download Python 3.10.4 
+2) Create virtual environment: python3.10 -m venv env
+3) Activate virutal environment: source env/bin/activate
+4) Install packages: pip install -r requirements.txt
+5) Verify installations: python -m pip list
 
 # Software Structure
 STraM consists of various programming scripts, including: 

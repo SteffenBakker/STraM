@@ -2,515 +2,449 @@
 Doing the following analysis: 
 FuelScen_carbontaxintermediate
 ----------------------------
+Reading data...
+Reading and constructing data
+Function construct_sets Took 0.0012 seconds
+Function construct_network Took 0.0047 seconds
+Transport demand in the base year 2018 (in MTonnes):
+             product  tot_weight
+0           Dry bulk       94.86
+1   Container (fast)        4.07
+2   Container (slow)        9.23
+3  Break bulk (fast)       11.61
+4  Break bulk (slow)       15.37
+5           Neo bulk       19.28
+Function construct_ODD Took 0.5082 seconds
+Function construct_vehicles Took 0.5421 seconds
+Function construct_emission_transfer Took 0.1510 seconds
+Function construct_costs Took 2.2955 seconds
+Function construct_time_value Took 0.0012 seconds
+Function construct_investments Took 0.0086 seconds
+Function construct_charging_edges Took 0.1858 seconds
+Function construct_tech_readiness Took 0.0047 seconds
+Function construct_path_generation Took 0.1558 seconds
+Function construct_param2 Took 0.0602 seconds
+Function combined_sets Took 0.4092 seconds
+Function combined_sets Took 0.4451 seconds
+Done reading data.
+Time used reading the base data: 16.278382062911987
 Solving the first time period for initialization purposes...
-Using license file C:\Users\steffejb\gurobi.lic
-Academic license - for non-commercial use only
-Read LP format model from file C:\Users\steffejb\OneDrive - NTNU\Work\GitHub\STraM_ntnu_development\temp\pyomo\tmp9aopz4_d.pyomo.lp
-Reading time = 15.10 seconds
-x540794: 2206928 rows, 540794 columns, 7780619 nonzeros
-Changed value of parameter FeasibilityTol to 0.0001
-   Prev: 1e-06  Min: 1e-09  Max: 0.01  Default: 1e-06
-Changed value of parameter MIPGap to 0.002
-   Prev: 0.0001  Min: 0.0  Max: inf  Default: 0.0001
-Parameter NumericFocus unchanged
-   Value: 0  Min: 0  Max: 3  Default: 0
-Parameter BarConvTol unchanged
-   Value: 1e-08  Min: 0.0  Max: 1.0  Default: 1e-08
-Parameter Crossover unchanged
-   Value: -1  Min: -1  Max: 5  Default: -1
-Parameter Method unchanged
-   Value: -1  Min: -1  Max: 5  Default: -1
-Parameter NodeMethod unchanged
-   Value: -1  Min: -1  Max: 2  Default: -1
-Gurobi Optimizer version 9.0.0 build v9.0.0rc2 (win64)
-Optimize a model with 2206928 rows, 540794 columns and 7780619 nonzeros
-Model fingerprint: 0xa3930db1
+Function combined_sets Took 0.1552 seconds
+Set parameter Username
+Academic license - for non-commercial use only - expires 2025-09-27
+Read LP format model from file C:\Users\sandee\Documents\Github\STraM_ntnu_development\temp\pyomo\tmpwklnl_cc.pyomo.lp
+Reading time = 4.50 seconds
+x1: 2206927 rows, 540793 columns, 7780618 nonzeros
+Set parameter FeasibilityTol to value 0.0001
+Set parameter MIPGap to value 0.002
+Gurobi Optimizer version 11.0.0 build v11.0.0rc2 (win64 - Windows 10.0 (19045.2))
+
+CPU model: Intel(R) Core(TM) i7-10700 CPU @ 2.90GHz, instruction set [SSE2|AVX|AVX2]
+Thread count: 8 physical cores, 16 logical processors, using up to 16 threads
+
+Optimize a model with 2206927 rows, 540793 columns and 7780618 nonzeros
+Model fingerprint: 0x8a58a1de
 Coefficient statistics:
   Matrix range     [6e-06, 1e+03]
   Objective range  [8e-02, 3e-01]
   Bounds range     [0e+00, 0e+00]
   RHS range        [1e-03, 9e+01]
-
-Concurrent LP optimizer: dual simplex and barrier
-Showing barrier log only...
-
-Presolve removed 561816 rows and 483559 columns (presolve time = 6s) ...
-Presolve removed 2204268 rows and 518515 columns
-Presolve time: 8.77s
+Presolve removed 2204267 rows and 518514 columns
+Presolve time: 4.06s
 Presolved: 2660 rows, 23242 columns, 201168 nonzeros
+
+Concurrent LP optimizer: primal simplex, dual simplex, and barrier
+Showing barrier log only...
 
 Ordering time: 0.02s
 
 Barrier statistics:
  AA' NZ     : 8.445e+04
- Factor NZ  : 1.896e+05 (roughly 12 MBytes of memory)
- Factor Ops : 2.653e+07 (less than 1 second per iteration)
- Threads    : 3
+ Factor NZ  : 1.912e+05 (roughly 12 MB of memory)
+ Factor Ops : 2.732e+07 (less than 1 second per iteration)
+ Threads    : 6
 
                   Objective                Residual
 Iter       Primal          Dual         Primal    Dual     Compl     Time
-   0   9.44559917e+01 -1.92600000e-01  6.64e+04 0.00e+00  2.36e+00     9s
-   1   3.96690251e+01 -2.03950651e+00  2.63e+04 6.05e-02  9.79e-01     9s
-   2   2.78314986e+01 -3.27011961e+00  1.68e+04 1.33e-02  6.09e-01     9s
-   3   7.83055650e+00 -1.82777732e+00  2.46e+03 6.48e-03  9.17e-02     9s
-   4   4.40482917e+00  5.17812892e+00  8.51e+02 1.68e-03  3.21e-02     9s
-   5   3.82011086e+00  8.81281291e+00  6.63e+02 1.32e-03  2.50e-02     9s
-   6   3.85973482e+00  2.59765512e+01  5.61e+02 7.69e-04  2.16e-02     9s
-   7   4.73527845e+00  2.67493040e+01  4.44e+02 7.30e-04  1.70e-02     9s
-   8   1.83285576e+01  3.68437950e+01  2.49e+02 5.03e-04  9.83e-03     9s
-   9   2.03209821e+01  4.58151155e+01  2.10e+02 4.21e-04  8.29e-03     9s
-  10   2.27973740e+01  5.44378708e+01  1.77e+02 3.93e-04  6.97e-03     9s
-  11   2.65930174e+01  6.19774629e+01  1.54e+02 3.33e-04  6.01e-03     9s
-  12   2.86794781e+01  6.44792994e+01  1.47e+02 3.18e-04  5.76e-03     9s
-  13   3.44624379e+01  7.02680580e+01  1.19e+02 2.68e-04  4.74e-03     9s
-  14   3.68633096e+01  7.14335701e+01  1.11e+02 2.58e-04  4.45e-03     9s
-  15   4.02253384e+01  7.60093277e+01  1.00e+02 2.33e-04  4.02e-03     9s
-  16   4.51196799e+01  8.10806155e+01  8.29e+01 2.07e-04  3.27e-03     9s
-  17   4.74691330e+01  9.00786639e+01  7.63e+01 1.82e-04  3.01e-03     9s
-  18   4.93639909e+01  9.28011300e+01  7.13e+01 1.79e-04  2.81e-03     9s
-  19   5.07892676e+01  9.60166641e+01  6.81e+01 1.75e-04  2.67e-03     9s
-  20   5.36119391e+01  9.93267062e+01  6.30e+01 1.70e-04  2.45e-03     9s
-  21   5.47484079e+01  1.02460659e+02  6.12e+01 1.60e-04  2.38e-03     9s
-  22   5.62722726e+01  1.04334524e+02  5.88e+01 1.55e-04  2.29e-03     9s
-  23   5.93794431e+01  1.07725315e+02  5.47e+01 1.46e-04  2.13e-03     9s
-  24   6.16578865e+01  1.10918658e+02  5.17e+01 1.39e-04  2.01e-03     9s
-  25   6.28635374e+01  1.23175677e+02  5.01e+01 1.19e-04  2.01e-03     9s
-  26   7.01773484e+01  1.23807120e+02  4.36e+01 1.15e-04  1.74e-03     9s
-  27   7.16672349e+01  1.27879045e+02  4.22e+01 1.07e-04  1.67e-03     9s
-  28   7.24804144e+01  1.30270092e+02  4.15e+01 1.03e-04  1.65e-03     9s
-  29   7.52202104e+01  1.31746283e+02  3.92e+01 9.99e-05  1.55e-03     9s
-  30   7.89945142e+01  1.35004781e+02  3.64e+01 8.85e-05  1.44e-03     9s
-  31   7.95042247e+01  1.35826755e+02  3.60e+01 8.66e-05  1.43e-03    10s
-  32   8.16528709e+01  1.37070703e+02  3.45e+01 8.34e-05  1.37e-03    10s
-  33   8.21786584e+01  1.38353946e+02  3.41e+01 7.98e-05  1.37e-03    10s
-  34   8.49539161e+01  1.41513539e+02  3.22e+01 7.15e-05  1.31e-03    10s
-  35   9.16795677e+01  1.47026515e+02  2.73e+01 6.55e-05  1.10e-03    10s
-  36   9.32231813e+01  1.50567310e+02  2.62e+01 6.35e-05  1.05e-03    10s
-  37   9.47770644e+01  1.55505246e+02  2.52e+01 6.11e-05  1.01e-03    10s
-  38   9.63465707e+01  1.60134402e+02  2.44e+01 5.99e-05  9.70e-04    10s
-  39   1.00677172e+02  1.64084791e+02  2.24e+01 5.48e-05  8.86e-04    10s
-  40   1.03393293e+02  1.68493960e+02  2.11e+01 5.21e-05  8.85e-04    10s
-  41   1.04854933e+02  1.70865682e+02  2.04e+01 5.09e-05  8.55e-04    10s
-  42   1.08876689e+02  1.76515936e+02  1.87e+01 4.84e-05  7.57e-04    10s
-  43   1.10982946e+02  1.82017102e+02  1.79e+01 4.67e-05  7.17e-04    10s
-  44   1.12672882e+02  1.86719846e+02  1.73e+01 4.54e-05  6.93e-04    10s
-  45   1.15837227e+02  1.94468343e+02  1.63e+01 4.38e-05  6.31e-04    10s
-  46   1.17751041e+02  1.97558887e+02  1.59e+01 4.31e-05  6.19e-04    10s
-  47   1.19146056e+02  2.05493717e+02  1.55e+01 4.19e-05  6.14e-04    10s
-  48   4.00002434e+03 -1.92600000e+03  2.81e+06 0.00e+00  1.00e+06    10s
-  49   2.09748416e+04 -2.92596945e+04  1.31e+06 6.33e+02  5.08e+05    10s
-  50   6.42675362e+05 -5.38652003e+04  2.72e+05 4.13e+02  1.18e+05    10s
-  51   7.01989032e+05 -2.30463259e+05  1.07e+05 1.17e+02  4.47e+04    10s
-  52   7.29052554e+05 -2.78726918e+05  3.47e+04 6.92e+01  1.65e+04    10s
-  53   7.75850557e+05 -3.39448374e+05  1.10e+04 3.05e+01  5.81e+03    10s
-  54   7.54221295e+05 -3.42530876e+05  5.00e+03 9.31e+00  2.47e+03    10s
-  55   6.53698074e+05 -3.07528136e+05  9.11e+02 3.21e+00  5.50e+02    10s
-  56   5.44568141e+05 -2.34085399e+05  3.00e+02 1.73e+00  2.25e+02    10s
-  57   3.85530111e+05 -1.75524782e+05  1.26e+02 9.65e-01  1.09e+02    10s
-  58   2.90193188e+05 -1.39628387e+05  5.42e+01 6.45e-01  6.13e+01    10s
-  59   1.76885789e+05 -8.87228391e+04  1.95e+01 3.28e-01  2.77e+01    10s
-  60   9.14672753e+04 -5.60232398e+04  6.04e+00 1.77e-01  1.25e+01    10s
-  61   5.88476673e+04 -2.64913992e+04  2.82e+00 5.26e-02  5.34e+00    10s
-  62   3.79174589e+04 -1.97686669e+04  1.65e+00 3.87e-02  3.49e+00    10s
-  63   2.21808504e+04 -1.07468308e+04  8.35e-01 2.02e-02  1.87e+00    10s
-  64   1.23927178e+04 -6.81526734e+03  3.78e-01 1.24e-02  1.04e+00    10s
-  65   7.36659050e+03 -3.72861995e+03  1.75e-01 6.92e-03  5.69e-01    10s
-  66   5.51147191e+03 -1.47129675e+03  1.13e-01 2.74e-03  3.30e-01    10s
-  67   3.18452057e+03 -1.47603118e+03  4.98e-02 2.53e-03  2.17e-01    10s
-  68   2.51533021e+03 -6.32060219e+02  3.50e-02 1.45e-03  1.40e-01    10s
-  69   1.97039746e+03 -4.36683322e+02  2.44e-02 1.19e-03  1.06e-01    10s
-  70   1.54921776e+03 -1.50486150e+02  1.70e-02 7.78e-04  7.31e-02    10s
-  71   1.13554890e+03  6.98013752e+00  9.44e-03 5.74e-04  4.78e-02    10s
-  72   9.41874428e+02  2.36387195e+02  6.20e-03 3.04e-04  2.93e-02    10s
-  73   7.83420513e+02  3.61809480e+02  3.73e-03 1.64e-04  1.73e-02    10s
-  74   7.14569996e+02  4.07682717e+02  2.68e-03 1.16e-04  1.25e-02    10s
-  75   6.48615665e+02  4.51542432e+02  1.70e-03 6.66e-05  7.98e-03    10s
-  76   6.08356469e+02  4.64661048e+02  1.13e-03 5.26e-05  5.82e-03    10s
-  77   5.84395102e+02  4.88350547e+02  8.06e-04 3.02e-05  3.87e-03    10s
-  78   5.54054668e+02  4.94903865e+02  4.09e-04 2.39e-05  2.40e-03    10s
-  79   5.37067202e+02  5.03490475e+02  1.91e-04 1.48e-05  1.36e-03    11s
-  80   5.30722685e+02  5.09200854e+02  1.17e-04 9.45e-06  8.74e-04    11s
-  81   5.28895164e+02  5.11496974e+02  9.75e-05 7.24e-06  7.05e-04    11s
-  82   5.25752508e+02  5.13364301e+02  6.47e-05 5.27e-06  5.03e-04    11s
-  83   5.22493874e+02  5.15617564e+02  3.22e-05 3.09e-06  2.80e-04    11s
-  84   5.20653866e+02  5.16675033e+02  1.61e-05 2.00e-06  1.62e-04    11s
-  85   5.19690949e+02  5.17258615e+02  8.45e-06 1.36e-06  9.98e-05    11s
-  86   5.19298624e+02  5.17473440e+02  5.52e-06 1.11e-06  7.52e-05    11s
-  87   5.19026198e+02  5.17768690e+02  3.57e-06 7.85e-07  5.19e-05    11s
-  88   5.18831569e+02  5.17939211e+02  2.27e-06 5.96e-07  3.70e-05    11s
-  89   5.18650677e+02  5.18065110e+02  1.10e-06 4.42e-07  2.44e-05    11s
-  90   5.18533566e+02  5.18307409e+02  4.67e-07 1.52e-07  9.37e-06    11s
-  91   5.18455004e+02  5.18392054e+02  1.25e-07 3.82e-08  2.59e-06    11s
-  92   5.18424428e+02  5.18406431e+02  1.27e-08 1.86e-08  7.68e-07    11s
-  93   5.18422581e+02  5.18412432e+02  6.00e-09 1.04e-08  4.33e-07    11s
-  94   5.18421480e+02  5.18419036e+02  2.75e-09 1.45e-09  1.01e-07    11s
-  95   5.18420329e+02  5.18420088e+02  8.16e-10 9.43e-11  9.74e-09    11s
-  96   5.18420186e+02  5.18420169e+02  4.11e-10 2.91e-12  6.59e-10    11s
-  97   5.18420173e+02  5.18420172e+02  7.95e-10 7.80e-14  3.61e-11    11s
+   0   4.38466883e+00 -5.98525000e-01  2.86e+05 0.00e+00  1.26e+00     4s
+   1   1.66909776e+00 -5.26948741e-01  7.02e+04 2.08e-02  3.22e-01     4s
+   2   1.26205358e+00  2.63243101e-01  1.79e+04 1.31e-02  8.55e-02     4s
+   3   1.88176684e+01  7.01339654e+00  5.36e+03 4.18e-03  2.60e-02     4s
+   4   1.52283441e+01  2.49650874e+01  3.23e+03 1.62e-03  1.58e-02     4s
+   5   1.43634442e+01  3.00659680e+01  2.62e+03 1.56e-03  1.27e-02     4s
+   6   1.54753419e+01  3.58238940e+01  2.47e+03 1.45e-03  1.21e-02     4s
+   7   1.61032924e+01  4.73810050e+01  2.20e+03 1.22e-03  1.07e-02     4s
+   8   1.99851724e+01  4.47409805e+01  1.70e+03 1.07e-03  8.31e-03     4s
+   9   2.34409508e+01  6.44948659e+01  1.38e+03 7.39e-04  6.67e-03     4s
+  10   2.53285642e+01  7.32805772e+01  1.21e+03 6.59e-04  5.80e-03     4s
+  11   2.78491426e+01  8.00182677e+01  1.08e+03 6.14e-04  5.09e-03     4s
+  12   3.01943574e+01  8.40748395e+01  9.92e+02 5.86e-04  4.70e-03     4s
+  13   3.28257865e+01  9.10676963e+01  9.16e+02 5.42e-04  4.30e-03     4s
+  14   3.78904049e+01  9.68127235e+01  7.98e+02 4.81e-04  3.68e-03     4s
+  15   4.11897495e+01  1.05074517e+02  7.31e+02 4.47e-04  3.35e-03     4s
+  16   4.23976958e+01  1.09885394e+02  7.11e+02 4.32e-04  3.26e-03     4s
+  17   4.43966086e+01  1.13008598e+02  6.85e+02 4.19e-04  3.13e-03     4s
+  18   4.64652684e+01  1.17114037e+02  6.57e+02 4.03e-04  3.00e-03     4s
+  19   5.35265519e+01  1.20257734e+02  5.71e+02 3.83e-04  2.57e-03     4s
+  20   5.80664336e+01  1.34265102e+02  5.16e+02 3.34e-04  2.30e-03     4s
+  21   6.15320556e+01  1.40649473e+02  4.81e+02 3.24e-04  2.11e-03     4s
+  22   6.42346021e+01  1.44260727e+02  4.57e+02 3.14e-04  1.99e-03     4s
+  23   6.86495058e+01  1.52193508e+02  4.25e+02 2.95e-04  1.85e-03     4s
+  24   6.98462094e+01  1.62132188e+02  4.18e+02 2.77e-04  1.85e-03     4s
+  25   7.56366374e+01  1.66740934e+02  3.85e+02 2.66e-04  1.67e-03     4s
+  26   8.03870523e+01  1.73842537e+02  3.60e+02 2.45e-04  1.53e-03     4s
+  27   8.50949880e+01  1.81262743e+02  3.36e+02 2.31e-04  1.41e-03     4s
+  28   8.76519407e+01  1.84070056e+02  3.24e+02 2.28e-04  1.35e-03     4s
+  29   8.94441837e+01  1.89499347e+02  3.15e+02 2.16e-04  1.32e-03     4s
+  30   9.32066631e+01  1.92081964e+02  2.99e+02 2.07e-04  1.24e-03     4s
+  31   9.98104818e+01  1.95825799e+02  2.72e+02 2.02e-04  1.09e-03     4s
+  32   1.03543178e+02  2.03494521e+02  2.58e+02 1.90e-04  1.03e-03     5s
+  33   1.07425495e+02  2.11907937e+02  2.44e+02 1.81e-04  9.60e-04     5s
+  34   1.11744390e+02  2.16275219e+02  2.31e+02 1.77e-04  8.93e-04     5s
+  35   1.13906830e+02  2.21298795e+02  2.24e+02 1.72e-04  8.66e-04     5s
+  36   1.18657858e+02  2.26061895e+02  2.11e+02 1.68e-04  7.82e-04     5s
+  37   1.22344170e+02  2.37412740e+02  2.01e+02 1.62e-04  7.48e-04     5s
+  38   1.25725469e+02  2.46885457e+02  1.93e+02 1.56e-04  7.13e-04     5s
+  39   1.29297939e+02  2.52453906e+02  1.86e+02 1.52e-04  6.76e-04     5s
+  40   1.33898970e+02  2.58826054e+02  1.78e+02 1.47e-04  6.46e-04     5s
+  41   1.38399290e+02  2.67908964e+02  1.71e+02 1.41e-04  6.14e-04     5s
+  42   1.41387219e+02  2.76776378e+02  1.66e+02 1.37e-04  5.97e-04     5s
+  43   1.44633624e+02  2.80512863e+02  1.61e+02 1.36e-04  5.71e-04     5s
+  44   1.47452141e+02  2.87817949e+02  1.57e+02 1.33e-04  5.53e-04     5s
+  45   1.49425403e+02  2.99391279e+02  1.54e+02 1.31e-04  5.48e-04     5s
+  46   1.52068556e+02  3.07980983e+02  1.51e+02 1.29e-04  5.26e-04     5s
+  47   1.55521261e+02  3.13849457e+02  1.47e+02 1.27e-04  5.01e-04     5s
+  48   1.59151217e+02  3.20380631e+02  1.43e+02 1.25e-04  4.85e-04     5s
+  49   1.61707508e+02  3.24707794e+02  1.41e+02 1.23e-04  4.78e-04     5s
+  50   1.68097906e+02  3.31108844e+02  1.35e+02 1.18e-04  4.61e-04     5s
+  51   1.71500426e+02  3.37126658e+02  1.32e+02 1.15e-04  4.54e-04     5s
+  52   1.74830508e+02  3.39260306e+02  1.29e+02 1.14e-04  4.44e-04     5s
+  53   1.75465435e+02  3.41436914e+02  1.29e+02 1.13e-04  4.43e-04     5s
+  54   1.77324818e+02  3.48314775e+02  1.27e+02 1.11e-04  4.39e-04     5s
+  55   1.79561184e+02  3.51503728e+02  1.26e+02 1.10e-04  4.33e-04     5s
+  56   1.82242432e+02  3.55604902e+02  1.23e+02 1.08e-04  4.24e-04     5s
+  57   1.85007728e+02  3.56259229e+02  1.21e+02 1.08e-04  4.15e-04     5s
+  58   1.88486328e+02  3.63176652e+02  1.19e+02 1.06e-04  4.03e-04     5s
+  59   1.91274230e+02  3.67971553e+02  1.17e+02 1.04e-04  4.02e-04     5s
+  60   1.93509106e+02  3.76761047e+02  1.15e+02 1.02e-04  4.02e-04     5s
+  61   1.97547337e+02  3.83213752e+02  1.13e+02 1.00e-04  3.92e-04     5s
+  62   2.00988513e+02  3.90102307e+02  1.10e+02 9.83e-05  3.85e-04     5s
+  63   2.04632646e+02  3.96406450e+02  1.08e+02 9.68e-05  3.75e-04     5s
+  64   2.06903101e+02  4.00663862e+02  1.07e+02 9.53e-05  3.71e-04     5s
+  65   2.10277350e+02  4.05990011e+02  1.05e+02 9.35e-05  3.66e-04     5s
+  66   2.13296324e+02  4.11145995e+02  1.03e+02 9.22e-05  3.60e-04     5s
+  67   2.16939459e+02  4.15730741e+02  1.01e+02 9.10e-05  3.51e-04     5s
+  68   2.19753028e+02  4.21008489e+02  9.98e+01 8.94e-05  3.50e-04     5s
 
-Barrier solved model in 97 iterations and 11.00 seconds
-Optimal objective 5.18420173e+02
+Barrier performed 68 iterations in 4.78 seconds (5.51 work units)
+Barrier solve interrupted - model solved by another algorithm
 
-Crossover log...
 
-     393 DPushes remaining with DInf 0.0000000e+00                11s
-       0 DPushes remaining with DInf 4.8230662e-13                11s
-
-      73 PPushes remaining with PInf 0.0000000e+00                11s
-       0 PPushes remaining with PInf 0.0000000e+00                11s
-
-  Push phase complete: Pinf 0.0000000e+00, Dinf 5.3883300e-13     11s
-
+Solved with dual simplex
 Iteration    Objective       Primal Inf.    Dual Inf.      Time
-     466    5.1842013e+02   0.000000e+00   0.000000e+00     14s
+    6131    5.4431563e+02   9.000000e-04   1.628435e+08      6s
+Extra simplex iterations after uncrush: 1
+    6135    5.4431587e+02   0.000000e+00   0.000000e+00      7s
 
-Solved with barrier
-Solved in 466 iterations and 15.07 seconds
-Optimal objective  5.184201286e+02
+Solved in 6135 iterations and 6.91 seconds (10.16 work units)
+Optimal objective  5.443158693e+02
 the solution is feasible and optimal
-Solution time: 37.68028235435486
+Solution time: 14.517323970794678
+Function combined_sets Took 0.4045 seconds
 -----
 Constructing full SP model...
 Done constructing model.
-Time used constructing the model: 256.3184325695038
+Time used constructing the model: 84.89810800552368
 ----------
 Solving model...
-Using license file C:\Users\steffejb\gurobi.lic
-Academic license - for non-commercial use only
-Read LP format model from file C:\Users\steffejb\OneDrive - NTNU\Work\GitHub\STraM_ntnu_development\temp\pyomo\tmpk5__qkfb.pyomo.lp
-Reading time = 35.03 seconds
-x2706869: 4554353 rows, 1834337 columns, 25956983 nonzeros
-Changed value of parameter FeasibilityTol to 0.01
-   Prev: 1e-06  Min: 1e-09  Max: 0.01  Default: 1e-06
-Changed value of parameter MIPGap to 0.002
-   Prev: 0.0001  Min: 0.0  Max: inf  Default: 0.0001
-Parameter NumericFocus unchanged
-   Value: 0  Min: 0  Max: 3  Default: 0
-Parameter BarConvTol unchanged
-   Value: 1e-08  Min: 0.0  Max: 1.0  Default: 1e-08
-Parameter Crossover unchanged
-   Value: -1  Min: -1  Max: 5  Default: -1
-Parameter Method unchanged
-   Value: -1  Min: -1  Max: 5  Default: -1
-Parameter NodeMethod unchanged
-   Value: -1  Min: -1  Max: 2  Default: -1
-Gurobi Optimizer version 9.0.0 build v9.0.0rc2 (win64)
-Optimize a model with 4554353 rows, 1834337 columns and 25956983 nonzeros
-Model fingerprint: 0xfc93d545
-Variable types: 1834031 continuous, 306 integer (306 binary)
+Set parameter Username
+Academic license - for non-commercial use only - expires 2025-09-27
+Read LP format model from file C:\Users\sandee\Documents\Github\STraM_ntnu_development\temp\pyomo\tmp3qy4xau6.pyomo.lp
+Reading time = 14.44 seconds
+x1: 4554352 rows, 1834336 columns, 25956892 nonzeros
+Set parameter FeasibilityTol to value 0.01
+Set parameter MIPGap to value 0.002
+Gurobi Optimizer version 11.0.0 build v11.0.0rc2 (win64 - Windows 10.0 (19045.2))
+
+CPU model: Intel(R) Core(TM) i7-10700 CPU @ 2.90GHz, instruction set [SSE2|AVX|AVX2]
+Thread count: 8 physical cores, 16 logical processors, using up to 16 threads
+
+Optimize a model with 4554352 rows, 1834336 columns and 25956892 nonzeros
+Model fingerprint: 0x80cd7fa9
+Variable types: 1834030 continuous, 306 integer (306 binary)
 Coefficient statistics:
   Matrix range     [6e-06, 1e+03]
   Objective range  [8e-02, 3e-01]
   Bounds range     [1e+00, 6e+04]
   RHS range        [1e-03, 9e+01]
-Presolve removed 0 rows and 0 columns (presolve time = 7s) ...
-Presolve removed 1314965 rows and 73 columns (presolve time = 10s) ...
-Presolve removed 4423716 rows and 1035802 columns (presolve time = 20s) ...
-Presolve removed 4423716 rows and 1036310 columns (presolve time = 20s) ...
-Presolve removed 4426298 rows and 1042678 columns (presolve time = 25s) ...
-Presolve removed 4457399 rows and 1115210 columns (presolve time = 32s) ...
-Presolve removed 4457748 rows and 1135534 columns (presolve time = 35s) ...
-Presolve removed 4458891 rows and 1135596 columns (presolve time = 42s) ...
-Presolve removed 4459105 rows and 1136153 columns (presolve time = 45s) ...
-Presolve removed 4459186 rows and 1136234 columns (presolve time = 51s) ...
-Presolve removed 4459195 rows and 1136234 columns (presolve time = 55s) ...
-Presolve removed 4460725 rows and 1137674 columns (presolve time = 60s) ...
-Presolve removed 4461943 rows and 1137668 columns
-Presolve time: 62.33s
-Presolved: 92410 rows, 696669 columns, 8955381 nonzeros
-Variable types: 696635 continuous, 34 integer (34 binary)
-
+Presolve removed 4353589 rows and 1030994 columns (presolve time = 5s) ...
+Presolve removed 4353661 rows and 1037449 columns
+Presolve time: 7.47s
+Presolved: 200691 rows, 796887 columns, 16346691 nonzeros
+Variable types: 796853 continuous, 34 integer (34 binary)
 Deterministic concurrent LP optimizer: primal simplex, dual simplex, and barrier
 Showing barrier log only...
 
 Root barrier log...
 
-Ordering time: 1.39s
+Ordering time: 1.52s
 
 Barrier statistics:
- AA' NZ     : 4.238e+06
- Factor NZ  : 1.080e+07 (roughly 400 MBytes of memory)
- Factor Ops : 2.725e+09 (less than 1 second per iteration)
- Threads    : 1
+ AA' NZ     : 4.447e+06
+ Factor NZ  : 1.153e+07 (roughly 400 MB of memory)
+ Factor Ops : 2.840e+09 (less than 1 second per iteration)
+ Threads    : 5
 
                   Objective                Residual
 Iter       Primal          Dual         Primal    Dual     Compl     Time
-   0   2.26255568e+12 -3.16393651e+12  1.51e+10 7.42e+01  4.51e+08    92s
-   1   1.09853361e+12 -2.83456302e+12  7.20e+09 1.54e+02  2.18e+08    94s
-   2   4.86765669e+11 -2.61841310e+12  3.01e+09 1.23e+02  9.55e+07    96s
-   3   8.84583194e+10 -1.01398108e+12  3.52e+08 3.66e-01  1.19e+07    98s
-   4   2.65199007e+10 -3.12235563e+11  4.92e+07 1.62e-02  1.86e+06   101s
-   5   1.02661851e+10 -6.08835510e+10  1.43e+07 1.20e-03  5.22e+05   107s
-   6   6.46633208e+09 -2.48863428e+10  8.64e+06 1.56e-04  3.08e+05   111s
-   7   4.20502370e+09 -1.68154927e+10  5.46e+06 5.24e-10  1.96e+05   115s
-   8   3.66799892e+09 -1.49670630e+10  4.76e+06 4.00e-11  1.72e+05   119s
-   9   2.49811556e+09 -1.39331312e+10  3.14e+06 1.09e-11  1.16e+05   122s
-  10   1.52291903e+09 -8.37712193e+09  1.85e+06 1.83e-09  6.83e+04   124s
-  11   5.61030361e+08 -2.55755430e+09  6.64e+05 2.92e-09  2.43e+04   127s
-  12   2.03667346e+08 -2.12128955e+09  2.27e+05 2.23e-09  9.15e+03   130s
-  13   1.09447601e+08 -1.06843204e+09  1.11e+05 7.89e-10  4.43e+03   133s
-  14   7.53662975e+07 -7.99914761e+08  7.29e+04 5.18e-10  2.93e+03   137s
-  15   1.11565049e+07 -2.77276577e+08  8.28e+03 2.27e-09  4.51e+02   141s
-  16   3.75216643e+06 -7.95014753e+07  2.53e+03 5.34e-12  1.23e+02   146s
-  17   1.50257718e+06 -2.99048674e+07  9.41e+02 4.49e-12  4.32e+01   149s
-  18   9.31690538e+05 -2.27204211e+07  5.66e+02 2.98e-12  2.89e+01   152s
-  19   7.63855027e+05 -1.92723327e+07  4.58e+02 2.71e-12  2.38e+01   156s
-  20   6.59404289e+05 -1.62504326e+07  3.91e+02 2.21e-12  2.01e+01   159s
-  21   4.99805203e+05 -1.39067143e+07  2.91e+02 1.73e-12  1.62e+01   161s
-  22   2.85760144e+05 -9.79022492e+06  1.58e+02 1.63e-12  1.03e+01   164s
-  23   1.59818748e+05 -6.46520238e+06  8.29e+01 1.42e-12  6.27e+00   167s
-  24   1.10750271e+05 -4.64899316e+06  5.48e+01 1.26e-12  4.37e+00   170s
-  25   1.00802376e+05 -4.42918123e+06  4.94e+01 1.61e-12  4.10e+00   173s
-  26   8.42985834e+04 -3.83628975e+06  4.05e+01 1.76e-12  3.49e+00   176s
-  27   7.13949760e+04 -3.33677835e+06  3.35e+01 2.20e-12  2.99e+00   180s
-  28   6.09878923e+04 -3.18772452e+06  2.79e+01 1.51e-12  2.77e+00   183s
-  29   5.59791878e+04 -2.68055395e+06  2.51e+01 1.87e-12  2.35e+00   186s
-  30   4.73416905e+04 -2.34779195e+06  2.05e+01 1.77e-12  2.02e+00   190s
-  31   4.24628215e+04 -2.16530166e+06  1.79e+01 1.68e-12  1.84e+00   193s
-  32   3.44578308e+04 -1.99946300e+06  1.37e+01 1.37e-12  1.64e+00   196s
-  33   3.20859915e+04 -1.61511674e+06  1.24e+01 1.87e-12  1.34e+00   199s
-  34   2.79129239e+04 -1.46735517e+06  1.02e+01 1.08e-12  1.20e+00   202s
-  35   2.42379484e+04 -1.25496235e+06  8.22e+00 1.90e-12  1.01e+00   204s
-  36   2.10408910e+04 -9.82069917e+05  6.50e+00 2.17e-12  7.88e-01   207s
-  37   1.91541174e+04 -8.11101534e+05  5.51e+00 1.65e-12  6.50e-01   209s
-  38   1.76582498e+04 -6.85813067e+05  4.74e+00 1.50e-12  5.49e-01   212s
-  39   1.50704468e+04 -6.10956351e+05  3.48e+00 1.54e-12  4.78e-01   214s
-  40   1.45397872e+04 -5.91155966e+05  3.23e+00 2.66e-12  4.60e-01   217s
-  41   1.38635940e+04 -5.54668098e+05  2.90e+00 1.64e-12  4.29e-01   219s
-  42   1.31610611e+04 -4.77198989e+05  2.56e+00 1.73e-12  3.69e-01   222s
-  43   1.24702213e+04 -4.19968778e+05  2.24e+00 1.54e-12  3.24e-01   223s
-  44   1.19981694e+04 -3.73730294e+05  2.01e+00 1.36e-12  2.88e-01   225s
-  45   1.13516419e+04 -3.03396880e+05  1.70e+00 1.64e-12  2.35e-01   227s
-  46   1.09959539e+04 -2.67144997e+05  1.54e+00 1.95e-12  2.07e-01   229s
-  47   9.87399651e+03 -2.32332625e+05  1.07e+00 1.46e-12  1.77e-01   232s
-  48   9.57822582e+03 -1.78180225e+05  9.49e-01 2.20e-12  1.38e-01   234s
-  49   9.05196704e+03 -1.53677432e+05  7.56e-01 1.75e-12  1.18e-01   236s
-  50   8.38606608e+03 -1.25991063e+05  5.31e-01 1.58e-12  9.66e-02   239s
-  51   7.87058602e+03 -1.02857926e+05  3.89e-01 7.19e-12  7.90e-02   241s
-  52   7.13691767e+03 -7.23065427e+04  2.24e-01 5.08e-12  5.61e-02   242s
-  53   6.82092943e+03 -5.20827508e+04  1.77e-01 3.73e-12  4.15e-02   244s
-  54   6.40343378e+03 -4.35928312e+04  1.24e-01 3.15e-12  3.51e-02   246s
-  55   6.10206790e+03 -3.06982474e+04  9.46e-02 2.28e-12  2.58e-02   247s
-  56   5.93156079e+03 -2.21257822e+04  8.25e-02 1.69e-12  1.96e-02   249s
-  57   5.47808648e+03 -1.73168567e+04  5.53e-02 1.35e-12  1.59e-02   250s
-  58   5.17826445e+03 -1.35069686e+04  4.23e-02 1.13e-12  1.30e-02   251s
-  59   5.02717964e+03 -1.09202468e+04  3.69e-02 9.31e-13  1.11e-02   253s
-  60   4.85927837e+03 -9.56135265e+03  3.16e-02 8.49e-13  1.00e-02   254s
-  61   4.83895885e+03 -8.78700253e+03  3.10e-02 8.04e-13  9.49e-03   255s
-  62   4.69386738e+03 -8.22120884e+03  2.71e-02 7.56e-13  8.99e-03   256s
-  63   4.66970764e+03 -7.98233143e+03  2.65e-02 7.32e-13  8.80e-03   258s
-  64   4.44178718e+03 -6.97733775e+03  2.09e-02 6.88e-13  7.94e-03   259s
-  65   4.38312834e+03 -6.22925674e+03  1.96e-02 6.43e-13  7.38e-03   260s
-  66   4.31360266e+03 -5.79515699e+03  1.81e-02 6.08e-13  7.03e-03   261s
-  67   4.19693106e+03 -5.07258609e+03  1.58e-02 5.55e-13  6.44e-03   263s
-  68   4.15579448e+03 -4.42063318e+03  1.53e-02 4.96e-13  5.96e-03   264s
-  69   4.05112035e+03 -3.85163053e+03  1.34e-02 2.80e-11  5.49e-03   265s
-  70   3.96857539e+03 -3.04165750e+03  1.22e-02 1.41e-10  4.87e-03   267s
+   0   1.36694775e+13 -1.10373519e+13  9.05e+10 7.63e+01  2.64e+09    50s
+   1   9.38330321e+12 -1.09378279e+13  6.20e+10 2.11e+02  1.83e+09    51s
+   2   4.24285764e+12 -9.43987999e+12  2.76e+10 1.54e+02  8.46e+08    52s
+   3   9.18385816e+11 -4.00434186e+12  5.17e+09 1.08e+01  1.68e+08    53s
+   4   1.97159501e+11 -1.49358269e+12  5.00e+08 1.56e-01  1.81e+07    54s
+   5   6.87225672e+10 -3.77238599e+11  1.33e+08 3.55e-02  4.70e+06    55s
+   6   3.07688750e+10 -1.61810507e+11  5.00e+07 1.05e-02  1.79e+06    56s
+   7   1.30085012e+10 -4.40826038e+10  1.77e+07 1.82e-12  6.30e+05    57s
+   8   7.05736179e+09 -2.30330842e+10  9.26e+06 1.55e-11  3.31e+05    58s
+   9   6.10759793e+09 -1.90214723e+10  7.99e+06 1.32e-11  2.85e+05    59s
+  10   5.89205234e+09 -1.83634504e+10  7.70e+06 1.36e-11  2.75e+05    60s
+  11   5.15255529e+09 -1.75894974e+10  6.65e+06 1.32e-11  2.39e+05    60s
+  12   3.28627012e+09 -1.16537845e+10  4.12e+06 3.27e-11  1.48e+05    61s
+  13   1.78023686e+09 -4.58890583e+09  2.14e+06 3.30e-12  7.90e+04    62s
+  14   9.55048135e+08 -3.11885659e+09  1.12e+06 2.55e-10  4.16e+04    63s
+  15   4.17836793e+08 -1.15079643e+09  4.51e+05 6.62e-12  1.70e+04    64s
+  16   1.49720542e+08 -1.04479438e+09  1.49e+05 3.42e-12  6.02e+03    65s
+  17   7.76099940e+07 -7.00157114e+08  7.45e+04 4.98e-12  3.06e+03    66s
+  18   3.47316809e+07 -4.18365589e+08  3.07e+04 5.91e-12  1.30e+03    66s
+  19   1.67745262e+07 -1.83825369e+08  1.36e+04 1.18e-11  5.39e+02    67s
+  20   7.69555842e+06 -9.24247563e+07  5.83e+03 8.80e-10  2.25e+02    68s
+  21   2.82619715e+06 -2.86105779e+07  1.92e+03 8.19e-12  6.73e+01    69s
+  22   1.19981121e+06 -1.29147504e+07  7.41e+02 2.91e-11  2.64e+01    70s
+  23   7.96043264e+05 -1.03191951e+07  4.81e+02 1.23e-11  1.83e+01    71s
+  24   5.92647410e+05 -8.17724234e+06  3.55e+02 1.18e-11  1.38e+01    72s
+  25   4.16581985e+05 -7.05648578e+06  2.47e+02 1.00e-11  1.04e+01    72s
+  26   2.21633388e+05 -5.31753773e+06  1.24e+02 7.05e-12  6.36e+00    74s
+  27   1.23662238e+05 -3.74973330e+06  6.51e+01 1.09e-11  3.94e+00    75s
+  28   8.70026318e+04 -2.96857009e+06  4.36e+01 1.14e-11  2.92e+00    76s
+  29   7.78597689e+04 -2.27200122e+06  3.82e+01 1.05e-11  2.32e+00    77s
+  30   6.89151179e+04 -1.91740267e+06  3.30e+01 8.19e-12  1.95e+00    78s
+  31   6.19258341e+04 -1.72326705e+06  2.90e+01 7.28e-12  1.73e+00    78s
+  32   5.57343394e+04 -1.56972749e+06  2.57e+01 6.82e-12  1.56e+00    79s
+  33   5.43513140e+04 -1.49678420e+06  2.49e+01 6.37e-12  1.49e+00    80s
+  34   4.94904616e+04 -1.37180385e+06  2.22e+01 5.46e-12  1.35e+00    81s
+  35   3.95657124e+04 -1.20639594e+06  1.69e+01 5.23e-12  1.13e+00    83s
+  36   3.56292314e+04 -1.04930729e+06  1.47e+01 4.32e-12  9.72e-01    84s
+  37   3.10717660e+04 -9.62102574e+05  1.23e+01 4.09e-12  8.65e-01    85s
+  38   2.48483785e+04 -7.19788972e+05  8.89e+00 2.50e-12  6.33e-01    86s
+  39   1.99501534e+04 -5.90979731e+05  6.34e+00 1.82e-12  4.99e-01    87s
+  40   1.83310936e+04 -4.95342044e+05  5.46e+00 2.03e-12  4.17e-01    89s
+  41   1.60874540e+04 -4.08321017e+05  4.27e+00 1.14e-12  3.38e-01    90s
+  42   1.48960615e+04 -3.47674017e+05  3.64e+00 1.35e-12  2.86e-01    91s
+  43   1.44347945e+04 -3.07464857e+05  3.41e+00 1.54e-12  2.54e-01    92s
+  44   1.29748081e+04 -2.70766696e+05  2.69e+00 1.26e-12  2.19e-01    93s
+  45   1.23532078e+04 -2.23939403e+05  2.38e+00 2.31e-12  1.82e-01    95s
+  46   1.13281432e+04 -2.04764552e+05  1.89e+00 2.45e-12  1.63e-01    96s
+  47   1.06433324e+04 -1.81038121e+05  1.57e+00 3.91e-12  1.43e-01    98s
+  48   1.02096338e+04 -1.54629235e+05  1.37e+00 2.06e-12  1.22e-01    99s
+  49   9.99015469e+03 -1.50264476e+05  1.27e+00 3.54e-12  1.18e-01   100s
+  50   9.19732176e+03 -1.29583164e+05  9.31e-01 2.22e-12  1.00e-01   101s
 
-Barrier performed 70 iterations in 266.64 seconds
+Barrier performed 50 iterations in 101.43 seconds (74.92 work units)
 Barrier solve interrupted - model solved by another algorithm
 
-Concurrent spin time: 28.47s (can be avoided by choosing Method=3)
+Concurrent spin time: 0.16s
 
 Solved with dual simplex
 
-Root relaxation: objective 2.429795e+03, 111464 iterations, 195.36 seconds
+Root simplex log...
+
+Iteration    Objective       Primal Inf.    Dual Inf.      Time
+   99126    2.4914491e+03   3.000000e-02   0.000000e+00    105s
+   99163    2.4914492e+03   0.000000e+00   0.000000e+00    106s
+Extra simplex iterations after uncrush: 8306
+
+Root relaxation: objective 2.491449e+03, 99163 iterations, 66.83 seconds (31.94 work units)
 
     Nodes    |    Current Node    |     Objective Bounds      |     Work
  Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
 
-     0     0 2429.79540    0    3          - 2429.79540      -     -  267s
-H    0     0                    2429.8029990 2429.79540  0.00%     -  270s
+     0     0 2491.44918    0    3          - 2491.44918      -     -  106s
+H    0     0                    2491.4672843 2491.44918  0.00%     -  109s
 
-Explored 1 nodes (111464 simplex iterations) in 272.52 seconds
-Thread count was 8 (of 8 available processors)
+Explored 1 nodes (99163 simplex iterations) in 110.68 seconds (77.75 work units)
+Thread count was 16 (of 16 available processors)
 
-Solution count 1: 2429.8 
+Solution count 2: 2491.47 2491.47 
 
 Optimal solution found (tolerance 2.00e-03)
 Warning: max constraint violation (7.9740e-02) exceeds tolerance
 Warning: max bound violation (7.9009e-02) exceeds tolerance
-Best objective 2.429802998967e+03, best bound 2.429802998967e+03, gap 0.0000%
+Best objective 2.491467284301e+03, best bound 2.491467284301e+03, gap 0.0000%
 the solution is feasible and optimal
-Solution time: 322.5672700405121
+Solution time: 132.06480526924133
 Done solving model.
-Time used solving the model: 512.2640051841736
+Time used solving the model: 213.91772294044495
 ----------Dumping data in pickle file...done.
 Dumping results in pickle file.....done.
-objective function value:  2429.802998967242
-objective function value normalized (Billion EURO):  242.98
+objective function value:  2491.4672843005615
+objective function value normalized (Billion EURO):  249.15
                          2023                                            \
                            OO     OB     OP     BO     BB     BP     PO   
-LCOT                    3.901  3.901  3.901  3.901  3.901  3.901  3.901   
-LCOT (Empty Trips)      1.070  1.070  1.070  1.070  1.070  1.070  1.070   
-Emission                0.503  0.503  0.503  0.503  0.503  0.503  0.503   
-Emission (Empty Trips)  0.214  0.214  0.214  0.214  0.214  0.214  0.214   
+LCOT                    4.292  4.292  4.292  4.292  4.292  4.292  4.292   
+LCOT (Empty Trips)      1.225  1.225  1.225  1.225  1.225  1.225  1.225   
+Emission                0.501  0.501  0.501  0.501  0.501  0.501  0.501   
+Emission (Empty Trips)  0.212  0.212  0.212  0.212  0.212  0.212  0.212   
 CO2_Penalty             0.000  0.000  0.000  0.000  0.000  0.000  0.000   
-Time value              1.350  1.350  1.350  1.350  1.350  1.350  1.350   
-Transfer                2.069  2.069  2.069  2.069  2.069  2.069  2.069   
+Time value              1.343  1.343  1.343  1.343  1.343  1.343  1.343   
+Transfer                2.063  2.063  2.063  2.063  2.063  2.063  2.063   
 RailTrack               0.116  0.116  0.116  0.116  0.116  0.116  0.116   
-Terminal                0.048  0.048  0.048  0.048  0.048  0.048  0.048   
-RailElectr.            -0.000  0.000 -0.000  0.000  0.000  0.000  0.000   
+Terminal                0.049  0.049  0.049  0.049  0.049  0.049  0.049   
+RailElectr.             0.000  0.000  0.000  0.000  0.000  0.000  0.000   
 Charging                0.000  0.000  0.000  0.000  0.000  0.000  0.000   
-H2_Filling             -0.000 -0.000 -0.000 -0.000 -0.000 -0.000 -0.000   
+H2_Filling              0.000  0.000  0.000  0.000  0.000  0.000  0.000   
 
                                        2028                              \
                            PB     PP     OO     OB     OP     BO     BB   
-LCOT                    3.901  3.901  4.532  4.532  4.532  4.532  4.532   
-LCOT (Empty Trips)      1.070  1.070  0.971  0.971  0.971  0.971  0.971   
-Emission                0.503  0.503  0.949  0.949  0.949  0.949  0.949   
-Emission (Empty Trips)  0.214  0.214  0.274  0.274  0.274  0.274  0.274   
+LCOT                    4.292  4.292  4.943  4.943  4.943  4.943  4.943   
+LCOT (Empty Trips)      1.225  1.225  1.072  1.072  1.072  1.072  1.072   
+Emission                0.501  0.501  0.933  0.933  0.933  0.933  0.933   
+Emission (Empty Trips)  0.212  0.212  0.282  0.282  0.282  0.282  0.282   
 CO2_Penalty             0.000  0.000  0.000  0.000  0.000  0.000  0.000   
-Time value              1.350  1.350  1.629  1.629  1.629  1.629  1.629   
-Transfer                2.069  2.069  2.613  2.613  2.613  2.613  2.613   
+Time value              1.343  1.343  1.628  1.628  1.628  1.628  1.628   
+Transfer                2.063  2.063  2.610  2.610  2.610  2.610  2.610   
 RailTrack               0.116  0.116  0.000  0.000  0.000  0.000  0.000   
-Terminal                0.048  0.048  0.026  0.026  0.026  0.026  0.026   
-RailElectr.             0.000  0.000 -0.000  0.000 -0.000  0.000  0.000   
+Terminal                0.049  0.049  0.021  0.021  0.021  0.021  0.021   
+RailElectr.             0.000  0.000  0.000  0.000  0.000  0.000  0.000   
 Charging                0.000  0.000  0.006  0.006  0.006  0.006  0.006   
-H2_Filling             -0.000 -0.000  0.000  0.000  0.000  0.000  0.000   
+H2_Filling              0.000  0.000 -0.000 -0.000 -0.000 -0.000 -0.000   
 
                                                      2034                \
                            BP     PO     PB     PP     OO     OB     OP   
-LCOT                    4.532  4.532  4.532  4.532  5.062  5.161  4.612   
-LCOT (Empty Trips)      0.971  0.971  0.971  0.971  0.951  0.954  0.921   
-Emission                0.949  0.949  0.949  0.949  0.968  0.974  1.434   
-Emission (Empty Trips)  0.274  0.274  0.274  0.274  0.386  0.386  0.425   
+LCOT                    4.943  4.943  4.943  4.943  5.538  5.622  5.660   
+LCOT (Empty Trips)      1.072  1.072  1.072  1.072  1.315  1.124  1.132   
+Emission                0.933  0.933  0.933  0.933  0.819  0.823  0.895   
+Emission (Empty Trips)  0.282  0.282  0.282  0.282  0.124  0.339  0.340   
 CO2_Penalty             0.000  0.000  0.000  0.000  0.000  0.000  0.000   
-Time value              1.629  1.629  1.629  1.629  1.928  1.928  1.926   
-Transfer                2.613  2.613  2.613  2.613  3.093  3.091  3.092   
+Time value              1.628  1.628  1.628  1.628  1.926  1.926  1.927   
+Transfer                2.610  2.610  2.610  2.610  3.088  3.088  3.090   
 RailTrack               0.000  0.000  0.000  0.000  0.000  0.000  0.000   
-Terminal                0.026  0.026  0.026  0.026  0.000  0.000 -0.001   
+Terminal                0.021  0.021  0.021  0.021  0.000  0.000  0.001   
 RailElectr.             0.000  0.000  0.000  0.000  0.000  0.000  0.000   
-Charging                0.006  0.006  0.006  0.006  0.037  0.037  0.014   
-H2_Filling              0.000  0.000  0.000  0.000  0.000  0.000  0.000   
+Charging                0.006  0.006  0.006  0.006  0.054  0.054  0.054   
+H2_Filling             -0.000 -0.000 -0.000 -0.000  0.000  0.000  0.000   
 
                                                                    2040  \
                            BO     BB     BP     PO     PB     PP     OO   
-LCOT                    5.412  5.515  5.633  5.558  5.672  5.776  5.745   
-LCOT (Empty Trips)      1.286  1.112  1.074  1.317  1.361  1.180  1.401   
-Emission                0.862  0.867  0.867  0.865  0.862  0.867  0.591   
-Emission (Empty Trips)  0.132  0.332  0.379  0.121  0.137  0.331  0.008   
+LCOT                    5.747  5.832  5.965  5.843  5.930  6.053  5.932   
+LCOT (Empty Trips)      1.380  1.423  1.333  1.385  1.431  1.494  1.406   
+Emission                0.817  0.819  0.821  0.817  0.817  0.819  0.501   
+Emission (Empty Trips)  0.076  0.077  0.230  0.075  0.075  0.077  0.009   
 CO2_Penalty             0.000  0.000  0.000  0.000  0.000  0.000  0.000   
-Time value              1.929  1.926  1.926  1.928  1.927  1.928  2.040   
-Transfer                3.094  3.093  3.091  3.093  3.089  3.092  2.999   
+Time value              1.925  1.926  1.926  1.928  1.927  1.926  2.040   
+Transfer                3.088  3.089  3.088  3.089  3.087  3.090  3.001   
 RailTrack               0.000  0.000  0.000  0.000  0.000  0.000  0.000   
-Terminal               -0.001  0.000 -0.001 -0.001  0.000  0.000  0.001   
+Terminal                0.000  0.000  0.000  0.000  0.000  0.000  0.001   
 RailElectr.             0.000  0.000  0.000  0.000  0.000  0.000  0.000   
-Charging                0.054  0.054  0.047  0.054  0.054  0.054  0.087   
+Charging                0.054  0.054  0.054  0.054  0.054  0.054  0.086   
 H2_Filling              0.000  0.000  0.000  0.000  0.000  0.000  0.001   
 
                                                                          \
                            OB     OP     BO     BB     BP     PO     PB   
-LCOT                    5.919  5.643  5.862  6.036  6.191  5.932  6.106   
-LCOT (Empty Trips)      1.472  1.077  1.401  1.473  1.535  1.397  1.470   
-Emission                0.591  0.988  0.591  0.591  0.592  0.592  0.592   
-Emission (Empty Trips)  0.008  0.426  0.008  0.008  0.008  0.008  0.008   
+LCOT                    6.089  6.185  6.051  6.207  6.405  6.112  6.267   
+LCOT (Empty Trips)      1.467  1.514  1.408  1.468  1.517  1.409  1.467   
+Emission                0.500  0.602  0.501  0.500  0.500  0.500  0.501   
+Emission (Empty Trips)  0.008  0.008  0.008  0.008  0.008  0.008  0.008   
 CO2_Penalty             0.000  0.000  0.000  0.000  0.000  0.000  0.000   
-Time value              2.038  2.039  2.041  2.041  2.039  2.039  2.039   
-Transfer                3.006  2.998  2.997  3.001  3.004  3.003  3.010   
+Time value              2.039  2.039  2.039  2.040  2.042  2.040  2.038   
+Transfer                3.001  3.004  3.002  3.000  2.994  2.998  3.001   
 RailTrack               0.000  0.000  0.000  0.000  0.000  0.000  0.000   
-Terminal                0.001  0.001  0.000  0.001  0.000  0.001  0.001   
+Terminal                0.001  0.001  0.001  0.001  0.001  0.001  0.001   
 RailElectr.             0.000  0.000  0.000  0.000  0.000  0.000  0.000   
-Charging                0.086  0.087  0.087  0.086  0.086  0.086  0.086   
+Charging                0.086  0.086  0.086  0.087  0.086  0.086  0.086   
 H2_Filling              0.001  0.001  0.001  0.001  0.001  0.001  0.001   
 
                                 2050                                     \
                            PP     OO     OB     OP     BO     BB     BP   
-LCOT                    6.270  6.599  6.858  6.838  6.602  6.862  7.121   
-LCOT (Empty Trips)      1.538  1.447  1.487  1.541  1.444  1.488  1.542   
-Emission                0.592  0.002  0.003  0.554  0.002  0.003  0.003   
+LCOT                    6.468  6.607  6.858  7.061  6.614  6.857  7.060   
+LCOT (Empty Trips)      1.521  1.435  1.478  1.534  1.437  1.480  1.533   
+Emission                0.500  0.002  0.001  0.002  0.002  0.002  0.002   
 Emission (Empty Trips)  0.008  0.000  0.000  0.000  0.000  0.000  0.000   
 CO2_Penalty             0.000  0.000  0.000  0.000  0.000  0.000  0.000   
-Time value              2.039  2.430  2.421  2.419  2.429  2.421  2.419   
-Transfer                3.000  3.339  3.335  3.281  3.340  3.333  3.280   
+Time value              2.042  2.421  2.417  2.415  2.421  2.419  2.416   
+Transfer                2.993  3.280  3.283  3.281  3.276  3.282  3.284   
 RailTrack               0.000  0.000  0.000  0.000  0.000  0.000  0.000   
 Terminal                0.001  0.000  0.000  0.000  0.000  0.000  0.000   
 RailElectr.             0.000  0.000  0.000  0.000  0.000  0.000  0.000   
-Charging                0.086  0.060  0.060  0.060  0.060  0.060  0.060   
+Charging                0.086  0.060  0.060  0.060  0.061  0.060  0.060   
 H2_Filling              0.001  0.001  0.001  0.001  0.001  0.001  0.001   
 
-                                              2023                 2028  \
-                           PO     PB     PP   mean           std   mean   
-LCOT                    6.597  6.862  7.129  3.901  4.710277e-16  4.532   
-LCOT (Empty Trips)      1.443  1.487  1.541  1.070  0.000000e+00  0.971   
-Emission                0.002  0.002  0.002  0.503  0.000000e+00  0.949   
-Emission (Empty Trips)  0.000  0.000  0.000  0.214  0.000000e+00  0.274   
-CO2_Penalty             0.000  0.000  0.000  0.000  0.000000e+00  0.000   
-Time value              2.431  2.422  2.420  1.350  0.000000e+00  1.629   
-Transfer                3.343  3.335  3.280  2.069  0.000000e+00  2.613   
-RailTrack               0.000  0.000  0.000  0.116  0.000000e+00  0.000   
-Terminal                0.000  0.000  0.000  0.048  0.000000e+00  0.026   
-RailElectr.             0.000  0.000  0.000  0.000  0.000000e+00  0.000   
-Charging                0.060  0.060  0.060  0.000  0.000000e+00  0.006   
-H2_Filling              0.001  0.001  0.001  0.000  0.000000e+00  0.000   
+                                              2023        2028           2034  \
+                           PO     PB     PP   mean  std   mean  std      mean   
+LCOT                    6.607  6.857  7.067  4.292  0.0  4.943  0.0  5.798889   
+LCOT (Empty Trips)      1.435  1.479  1.533  1.225  0.0  1.072  0.0  1.335222   
+Emission                0.002  0.002  0.003  0.501  0.0  0.933  0.0  0.827444   
+Emission (Empty Trips)  0.000  0.000  0.000  0.212  0.0  0.282  0.0  0.157000   
+CO2_Penalty             0.000  0.000  0.000  0.000  0.0  0.000  0.0  0.000000   
+Time value              2.420  2.416  2.414  1.343  0.0  1.628  0.0  1.926333   
+Transfer                3.282  3.284  3.278  2.063  0.0  2.610  0.0  3.088556   
+RailTrack               0.000  0.000  0.000  0.116  0.0  0.000  0.0  0.000000   
+Terminal                0.000  0.000  0.000  0.049  0.0  0.021  0.0  0.000111   
+RailElectr.             0.000  0.000  0.000  0.000  0.0  0.000  0.0  0.000000   
+Charging                0.060  0.060  0.060  0.000  0.0  0.006  0.0  0.054000   
+H2_Filling              0.001  0.001  0.001  0.000  0.0  0.000  0.0  0.000000   
 
-                                          2034                2040            \
-                                 std      mean       std      mean       std   
-LCOT                    0.000000e+00  5.377889  0.370117  5.967111  0.204597   
-LCOT (Empty Trips)      1.177569e-16  1.128444  0.167818  1.418222  0.138759   
-Emission                1.177569e-16  0.951778  0.186584  0.635556  0.132168   
-Emission (Empty Trips)  0.000000e+00  0.292111  0.124958  0.054444  0.139333   
-CO2_Penalty             0.000000e+00  0.000000  0.000000  0.000000  0.000000   
-Time value              0.000000e+00  1.927333  0.001118  2.039444  0.001014   
-Transfer                0.000000e+00  3.092000  0.001500  3.002000  0.004183   
-RailTrack               0.000000e+00  0.000000  0.000000  0.000000  0.000000   
-Terminal                0.000000e+00 -0.000444  0.000527  0.000778  0.000441   
-RailElectr.             0.000000e+00  0.000000  0.000000  0.000000  0.000000   
-Charging                0.000000e+00  0.045000  0.013684  0.086333  0.000500   
-H2_Filling              0.000000e+00  0.000000  0.000000  0.001000  0.000000   
-
-                            2050                
-                            mean           std  
-LCOT                    6.829778  2.051254e-01  
-LCOT (Empty Trips)      1.491111  4.196857e-02  
-Emission                0.063667  1.838756e-01  
-Emission (Empty Trips)  0.000000  0.000000e+00  
-CO2_Penalty             0.000000  0.000000e+00  
-Time value              2.423556  4.952553e-03  
-Transfer                3.318444  2.874070e-02  
-RailTrack               0.000000  0.000000e+00  
-Terminal                0.000000  0.000000e+00  
-RailElectr.             0.000000  0.000000e+00  
-Charging                0.060000  7.359808e-18  
-H2_Filling              0.001000  0.000000e+00  
+                                      2040                2050            
+                             std      mean       std      mean       std  
+LCOT                    0.170929  6.190667  0.170264  6.843111  0.196608  
+LCOT (Empty Trips)      0.128889  1.464111  0.047588  1.482667  0.042388  
+Emission                0.025412  0.511667  0.033878  0.002000  0.000500  
+Emission (Empty Trips)  0.115022  0.008111  0.000333  0.000000  0.000000  
+CO2_Penalty             0.000000  0.000000  0.000000  0.000000  0.000000  
+Time value              0.000866  2.039889  0.001364  2.417667  0.002646  
+Transfer                0.001014  2.999333  0.003674  3.281111  0.002713  
+RailTrack               0.000000  0.000000  0.000000  0.000000  0.000000  
+Terminal                0.000333  0.001000  0.000000  0.000000  0.000000  
+RailElectr.             0.000000  0.000000  0.000000  0.000000  0.000000  
+Charging                0.000000  0.086111  0.000333  0.060111  0.000333  
+H2_Filling              0.000000  0.001000  0.000000  0.001000  0.000000  
                        2023     2028      2034      2040      2050     
                        mean std mean  std mean  std mean  std mean  std
-LCOT                    3.9   0  4.5    0  5.4 0.37    6  0.2  6.8 0.21
-LCOT (Empty Trips)      1.1   0 0.97    0  1.1 0.17  1.4 0.14  1.5 0.04
-Emission                0.5   0 0.95    0 0.95 0.19 0.64 0.13 0.06 0.18
-Emission (Empty Trips) 0.21   0 0.27    0 0.29 0.12 0.05 0.14    0    0
+LCOT                    4.3   0  4.9    0  5.8 0.17  6.2 0.17  6.8  0.2
+LCOT (Empty Trips)      1.2   0  1.1    0  1.3 0.13  1.5 0.05  1.5 0.04
+Emission                0.5   0 0.93    0 0.83 0.03 0.51 0.03    0    0
+Emission (Empty Trips) 0.21   0 0.28    0 0.16 0.12 0.01    0    0    0
 CO2_Penalty               0   0    0    0    0    0    0    0    0    0
-Time value              1.4   0  1.6    0  1.9    0    2    0  2.4    0
-Transfer                2.1   0  2.6    0  3.1    0    3    0  3.3 0.03
+Time value              1.3   0  1.6    0  1.9    0    2    0  2.4    0
+Transfer                2.1   0  2.6    0  3.1    0    3    0  3.3    0
 RailTrack              0.12   0    0    0    0    0    0    0    0    0
-Terminal               0.05   0 0.03    0   -0    0    0    0    0    0
+Terminal               0.05   0 0.02    0    0    0    0    0    0    0
 RailElectr.               0   0    0    0    0    0    0    0    0    0
-Charging                  0   0 0.01    0 0.04 0.01 0.09    0 0.06    0
+Charging                  0   0 0.01    0 0.05    0 0.09    0 0.06    0
 H2_Filling                0   0    0    0    0    0    0    0    0    0
 discount_factor           1   1 0.83 0.83 0.66 0.66 0.53 0.53 0.36 0.36
 emissions (MTonnes CO2 eq.):
-             AvgEmission  Std  AvgEmission_perc  Std_perc
-time_period                                              
-2023                 7.2    0             1e+02         0
-2028                 6.4    0                88         0
-2034                 4.2 0.99                58        14
-2040                 1.5 0.77                21        11
-2050               0.096 0.28               1.3       3.8
+             AvgEmission     Std  AvgEmission_perc  Std_perc
+time_period                                                 
+2023                 7.2       0             1e+02         0
+2028                 6.2       0                86         0
+2034                 3.1    0.58                44       8.1
+2040                 1.1    0.07                15      0.97
+2050              0.0034 0.00058             0.048    0.0081
 ----------------
 Average transport work in GTONNES*km:
-    mode            product time_period  TransportArbeid
-0   Rail           Dry bulk        2023              9.7
-1   Rail           Neo bulk        2023          -0.0015
-2   Road  Break bulk (fast)        2023              5.5
-3   Road  Break bulk (slow)        2023              5.8
-4   Road   Container (fast)        2023              2.1
-5   Road   Container (slow)        2023              2.7
-6   Road           Dry bulk        2023             0.54
-7   Road           Neo bulk        2023               12
-8    Sea  Break bulk (fast)        2023            0.091
-9    Sea  Break bulk (slow)        2023              1.1
-10   Sea   Container (fast)        2023              0.1
-11   Sea   Container (slow)        2023              1.1
-12   Sea           Dry bulk        2023               97
-13   Sea           Neo bulk        2023             0.26
+    mode            product time_period TransportArbeid
+0   Rail           Dry bulk        2023             9.7
+1   Rail           Neo bulk        2023         0.00039
+2   Road  Break bulk (fast)        2023             5.5
+3   Road  Break bulk (slow)        2023             5.8
+4   Road   Container (fast)        2023               2
+5   Road   Container (slow)        2023             2.7
+6   Road           Dry bulk        2023            0.57
+7   Road           Neo bulk        2023              12
+8    Sea  Break bulk (fast)        2023           0.091
+9    Sea  Break bulk (slow)        2023               1
+10   Sea   Container (fast)        2023             0.1
+11   Sea   Container (slow)        2023               1
+12   Sea           Dry bulk        2023              96
+13   Sea           Neo bulk        2023            0.26
 

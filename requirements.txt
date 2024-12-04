@@ -1,9 +1,11 @@
-matplotlib==3.4.3
-networkx==2.6.3
-numpy==1.21.2
-pandas==1.3.4
-pyomo==6.2
-openpyxl==3.0.9
+matplotlib
+networkx
+numpy
+pandas
+pyomo
+openpyxl
 # pip install matplotlib networkx numpy pandas pyomo openpyxl
-Basemap==1.3.6
-# dijkstra=
+Basemap
+dijkstar
+chardet
+cloudpickle

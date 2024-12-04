@@ -39,6 +39,20 @@ from path_generation import path_generation
 
 # from FreightTransportModel.Utils import plot_all_graphs  #FreightTransportModel.
 
+from functools import wraps
+import time
+
+def timeit(func):
+    @wraps(func)
+    def timeit_wrapper(*args, **kwargs):
+        start_time = time.perf_counter()
+        result = func(*args, **kwargs)
+        end_time = time.perf_counter()
+        total_time = end_time - start_time
+        print(f'Function {func.__name__} Took {total_time:.4f} seconds')
+        return result
+    return timeit_wrapper
+
 # Translate scenario_tree to the name of the corresponding excel sheet
 def get_scen_sheet_name(scenario_tree):
     sheet_name_scenarios = ""
@@ -133,6 +147,18 @@ class ScenarioInformation():
             p = row['Product Group']
             f = row['Fuel']
             self.cost_factor[(s,t,m,p,f)]= row['Cost Factor']
+        
+        #To get a value for each year
+        years = sorted(list(set([k[1] for k in self.cost_factor.keys()])))
+        new_dict = {}
+        for s,_,m,p,f in self.cost_factor.keys():
+            for k in range(len(years)-1):
+                delta = (self.cost_factor[(s,years[k+1],m,p,f)]- self.cost_factor[(s,years[k],m,p,f)])/ (years[k+1] - years[k])
+                for y in range(years[k]+1, years[k+1]):
+                    new_dict[(s,y,m,p,f)] = self.cost_factor[(s,years[k],m,p,f)] + delta * (y-years[k])
+        
+        self.cost_factor.update(new_dict)
+
 
         self.fg_maturity_path_name = [{}] * self.num_scenarios  
         self.fg_fuel_cost_path_name = [{}] * self.num_scenarios  
@@ -183,7 +209,7 @@ class ScenarioInformation():
 #Activating a scenario means that all relevant parameters are changed to their scenario values
 class TransportSets():
 
-    def __init__(self,sheet_name_scenarios='fuel_scenarios',co2_fee="base"):# or (self) 
+    def __init__(self,sheet_name_scenarios='fuel_scenarios',co2_fee="base", TIMES_data=None):# or (self) 
         
         self.single_time_period = None #only solve last time period -> remove all operational constraints for the other periods
 
@@ -195,10 +221,12 @@ class TransportSets():
         self.risk_information = None
 
         #read/construct data                
-        self.construct_pyomo_data(co2_fee)
-        self.combined_sets()
+        self.construct_pyomo_data(co2_fee, TIMES_data)
+        self.combined_sets(TIMES_data)
+        
+        
 
-    def construct_pyomo_data(self,co2_fee):
+    def construct_pyomo_data(self,co2_fee, TIMES_data=None):
 
         print("Reading and constructing data")
 
@@ -211,19 +239,82 @@ class TransportSets():
 
         self.S_SCENARIOS_ALL = self.scenario_information.scenario_names
         self.S_SCENARIOS = self.S_SCENARIOS_ALL
+        
+        self.construct_sets(*[pd.read_excel(r'Data/sets.xlsx',
+                                            sheet_name=s_name) 
+                              for s_name in ("modes",
+                                             "fuels",
+                                             "products",
+                                             "time_periods")])
+        
+        
+        
+        self.construct_network(*[pd.read_excel(r'Data/SPATIAL/spatial_data.xlsx',
+                                               sheet_name=s_name) 
+                              for s_name in ("zones_STRAM",
+                                             "distances_STRAM")])
+        
+        self.construct_ODD(pd.read_csv(r'Data/SPATIAL/demand.csv'), TIMES_data)
+        
+        cost_input = load_workbook(r'Data/cost_calculator.xlsx',
+                                   data_only=True)["Parameter Input"]
+        
+        self.construct_vehicles(cost_input)
 
-        # -----------------------
-        # ------- Sets ----------
-        # -----------------------
+        self.construct_emission_transfer(pd.read_excel(r'Data/cost_calculator.xlsx',
+                                                sheet_name="Transfer costs"),
+                                         cost_input,
+                                         co2_fee)
+        
+        if TIMES_data is not None:
+            conv_file = pd.read_excel(r'linking/Spatial/spatial_conversion_STRAM_TIMES2.xlsx',
+                                      sheet_name='edges').fillna(0)
+        else:
+            conv_file = None
+        
+        self.construct_costs(pd.read_excel(r'Data/cost_calculator.xlsx',
+                              sheet_name="Parameter Input"), conv_file, TIMES_data) #TODO : changer feuille si usage link
+        
+        self.construct_time_value(*[pd.read_excel(r'Data/time_value.xlsx',
+                                                sheet_name=s_name) 
+                                  for s_name in ("Output",
+                                                 "Speeds")])
+        
+        self.construct_investments(*[pd.read_excel(r'Data/capacities_and_investments.xlsx',
+                                                   sheet_name=s_name) 
+                              for s_name in ("node_capacities",
+                                             "edge_capacities")])
+        
+        self.construct_charging_edges(pd.read_excel(r'Data/capacities_and_investments.xlsx',
+                                                    sheet_name='charging_data'))
+        
+        inp1 = [pd.read_excel(r'Data/technological_maturity_readiness.xlsx',
+                              sheet_name=s_name) 
+                              for s_name in ("technological_readiness_bass",
+                                             "phase_out_fuels")]
+        inp2 = [pd.read_excel(r'Data/init_mode_fuel_mix.xlsx',
+                              sheet_name=s_name) 
+                              for s_name in ("init_fuel_mix",
+                                             "init_mode_mix")]
+        self.construct_tech_readiness(*inp1, *inp2)
+        
+
+        self.construct_path_generation(r'Data/SPATIAL/generated_paths_'\
+                                       +str(NUM_MODE_PATHS)+'_modes.pkl')
+        
+        self.construct_param2()
+        
+        
+    @timeit
+    def construct_sets(self, mode_sets, fuel_sets, product_sets, time_period_sets):
 
         # Modes and fuels
-        mode_sets = pd.read_excel(r'Data/sets.xlsx', sheet_name = "modes")
         
         self.M_MODES = []       # all modes
         self.M_MODES_CAP = []   # capacitated modes
 
         self.LIFETIME = {}      # lifetime of vehicle on each mode
-
+        
         for index, row in mode_sets.iterrows():
             cur_mode = row["Mode"]
             cur_capacitated = row["Capacitated"]
@@ -232,10 +323,6 @@ class TransportSets():
             if(cur_capacitated == "Yes"):
                 self.M_MODES_CAP.append(cur_mode)
             self.LIFETIME[cur_mode] = cur_lifetime
-
-
-        fuel_sets = pd.read_excel(r'Data/sets.xlsx', sheet_name = "fuels")
-
         
         self.F_FUEL = []            # all fuels
         self.FM_FUEL = {}           # all fuels per mode
@@ -264,11 +351,8 @@ class TransportSets():
         # list of new fuels
         self.NEW_F_LIST = set([e[1] for e in self.NEW_MF_LIST])
 
-
-
         # Products
-        product_sets = pd.read_excel(r'Data/sets.xlsx', sheet_name = "products")
-
+    
         self.P_PRODUCTS = []
         self.PC_PRODUCT_CLASSES = []
         self.PC_TO_P = {}
@@ -286,9 +370,7 @@ class TransportSets():
             self.P_TO_PC[cur_prod] = cur_prod_class
 
 
-       
         # Time periods
-        time_period_sets = pd.read_excel(r'Data/sets.xlsx', sheet_name = "time_periods")
 
         self.T_TIME_PERIODS = []    # all time periods (years) with decisions
         
@@ -315,16 +397,10 @@ class TransportSets():
         # time periods for reading demand data
         self.T_TIME_PERIODS_PWC = [2018, 2020, 2025, 2030, 2040, 2050]  # this should still be HARDCODED
 
-
-
-        # -----------------------
-        # ------- Network--------
-        # -----------------------
-
-        zone_data = pd.read_excel(r'Data/SPATIAL/spatial_data.xlsx',sheet_name="zones_STRAM")
+    @timeit
+    def construct_network(self, zone_data, distances):
 
         #NODES
-
         self.N_NODES = []
         self.SEA_NODES = []
         self.ROAD_NODES = []
@@ -353,7 +429,6 @@ class TransportSets():
 
 
         self.N_NODES_NORWAY = list(set(self.N_NODES) - set(self.N_ABROAD))
-        
 
         self.NM_NODES = {m:None for m in self.M_MODES}
         self.NM_NODES["Road"] = self.ROAD_NODES
@@ -377,7 +452,6 @@ class TransportSets():
         self.E_EDGES = []
         self.A_ARCS = []
         
-        distances = pd.read_excel(r'Data/SPATIAL/spatial_data.xlsx',sheet_name="distances_STRAM")
         distances_dict = {}
         for index, row in distances.iterrows():
             i = self.zone_nr_to_centroid[row["From"]]
@@ -407,7 +481,6 @@ class TransportSets():
             self.AM_ARCS[m].append(a1)
             self.AM_ARCS[m].append(a2)
 
-
         self.ANM_ARCS_IN = {(n,m):[] for n in self.N_NODES for m in self.M_MODES}
         self.ANM_ARCS_OUT = {(n,m):[] for n in self.N_NODES for m in self.M_MODES}
         for (i,j,m,r) in self.A_ARCS:
@@ -419,18 +492,17 @@ class TransportSets():
         # ------- Other--------
         # -----------------------
 
-
         if NO_DRY_BULK:
             self.P_PRODUCTS.remove("Dry bulk") #Dry bulk   HARDCODING
         if NO_LIQUID_BULK:
             self.P_PRODUCTS.remove("Liquid bulk") #Wet bulk
 
-
+    @timeit
+    def construct_ODD(self, pwc_aggr, TIMES_data):
         ####################################
         ### ORIGIN, DESTINATION AND DEMAND #
         ####################################
 
-        pwc_aggr = pd.read_csv(r'Data/SPATIAL/demand.csv')
 
         #Start with filtering of demand data. What to include and what not.
         D_DEMAND_ALL = {}  #5330 entries, after cutting off the small elements, only 4105 entries
@@ -497,6 +569,13 @@ class TransportSets():
         for (o,d,p,t), value in D_DEMAND_ALL.items():
             self.D_DEMAND[(o,d,p,t)] = round(value / self.scaling_factor_weight,self.precision_digits)
         
+        # if TIMES_data != None:
+        #     for (o,d,p,t), val in TIMES_data.trade_TIMES_odpt.items():
+        #         self.D_DEMAND[(o,d,p,t)] += 0 # TODO val
+        
+        
+        
+        
         #print('D_DEMAND:')
         #print(pd.Series(list(self.D_DEMAND.values())).describe())
 
@@ -516,31 +595,160 @@ class TransportSets():
         print(f"Transport demand in the base year {self.T_TIME_PERIODS_PWC[0]} (in MTonnes):")
         print(DEMAND_PRODUCT_BASE_YEAR)
 
+    @timeit
+    def construct_vehicles(self, ws): #, data_only=True
         
+        columns_MP = ["Year",
+                      "Capex costumization",
+                       "Residual value (costumization)",
+                       "Opex fix (admin, crew, insurance)",
+                       "Tonnage",
+                       "Market failure (av. utilization)",
+                       "Annual Mileage",
+                       "Lifetime costumization",
+                       "Opex var (mode-fees)"]
+        
+        columns_MF = ["Year",
+                      "Capex vehicle",
+                        "Residual value (vehicle)",
+                        "Lifetime vehicle",
+                        "Opex maintenance & repair",
+                        "Fuel Economy",
+                        "Fuel Cost",
+                        "Payload loss (fuel)",
+                        "WACC",
+                        "Emission cost",
+                        "Carbon permits",
+                        "CO2 content per mass/kWh",
+                        "Energy density/Efficiency",
+                        "CO2 content per kWh",
+                        "CO2 emission per km",
+                        "CO2 emission cost per km"]
+        
+        self.VEHICLES_DATA_MP = {(m,p):pd.DataFrame(columns=columns_MP).set_index('Year') for m in self.M_MODES for p in self.PC_PRODUCT_CLASSES}
+        self.VEHICLES_DATA_MF = {(m,f):pd.DataFrame(columns=columns_MF).set_index('Year') for m in self.M_MODES for f in self.FM_FUEL[m]}
+        
+        
+        taxes = {}
+        
+        for row in range(1, ws.max_row+1):
+            
+            if ws.cell(row, 2).value == "TAX":
+                taxes[(ws.cell(row, 3).value, ws.cell(row, 4).value)] = float(ws.cell(row, 5).value)
+            
+            if ws.cell(row, 1).value is not None and type(ws.cell(row, 1).value) == str :
+                if "Road" in ws.cell(row, 1).value:
+                    mode = "Road"
+                elif "Railway" in ws.cell(row, 1).value:
+                    mode = "Rail"
+                elif "Sea" in ws.cell(row, 1).value:
+                    mode = "Sea"
+            
+            if ws.cell(row, 1).value is not None and type(ws.cell(row, 1).value) == str and ws.cell(row, 1).value.split(": ")[-1] in self.PC_PRODUCT_CLASSES:
+                product = ws.cell(row, 1).value.split(": ")[-1]
+                t_start = int(ws.cell(row, 2).value)
+                t_end = int(ws.cell(row, 3).value)
+                for t in range(t_start, t_end+1):
+                    values = [sigmoid(t,
+                                        float(ws.cell(row+subrow, 2).value),
+                                        float(ws.cell(row+subrow, 3).value),
+                                        t_start, t_end,
+                                        float(ws.cell(row+subrow, 5).value),
+                                        float(ws.cell(row+subrow, 6).value),
+                                        float(ws.cell(row+subrow, 7).value)) for subrow in range(1,9)]
+                    self.VEHICLES_DATA_MP[(mode,product)].loc[int(t)] = values
+                                        
+            
+            if ws.cell(row, 11).value is not None and type(ws.cell(row, 11).value) == str and ws.cell(row, 11).value.split(" ")[0] in self.F_FUEL:
+                fuel = ws.cell(row, 11).value.split(" ")[0]
+                t_start = int(ws.cell(row, 12).value)
+                t_end = int(ws.cell(row, 13).value)
+                for t in range(t_start, t_end+1):
+                    values = [sigmoid(t,
+                                      float(ws.cell(row+subrow, 12).value),
+                                      float(ws.cell(row+subrow, 13).value),
+                                      t_start, t_end,
+                                      float(ws.cell(row+subrow, 15).value),
+                                      float(ws.cell(row+subrow, 16).value),
+                                      float(ws.cell(row+subrow, 17).value))
+                              for subrow in range(1,10)]
+                    
+                    if t in self.VEHICLES_DATA_MF[(mode,fuel)].index:
+                        for subrow in range(1, 10):
+                            self.VEHICLES_DATA_MF[(mode,fuel)].loc[t, columns_MF[:10][subrow]] = values[subrow-1]
+                    else:
+                        self.VEHICLES_DATA_MF[(mode,fuel)].loc[int(t)] = values + 6*[0]
 
-
+                    
+            
+            col = 23
+            while ws.cell(row, col).value is not None and type(ws.cell(row, col).value) == str and ws.cell(row, col).value.split(" ")[-1][0].upper() + ws.cell(row, col).value.split(" ")[-1][1:] in self.F_FUEL:
+                mode_bis = ws.cell(row, col).value.split(" ")[0].title()
+                if mode_bis == "Truck":
+                    mode_bis = "Road"
+                fuel = ws.cell(row, col).value.split(" ")[-1][0].upper() + ws.cell(row, col).value.split(" ")[-1][1:]
+                t_start = int(ws.cell(row, col+1).value)
+                t_end = int(ws.cell(row, col+2).value)
+                cur_mid = 12 #TODO:change hardcoded
+                cur_a = 0.9
+                cur_k = 0.4
+                for t in range(t_start, t_end+1):
+                    values = [sigmoid(t,
+                                      float(ws.cell(row+subrow, col+1).value),
+                                      float(ws.cell(row+subrow, col+2).value),
+                                      t_start, t_end, cur_mid, cur_a, cur_k)
+                              for subrow in range(1,7)]
+                    
+                    if t in self.VEHICLES_DATA_MF[(mode_bis,fuel)].index:
+                        for subrow in range(1,7):
+                            self.VEHICLES_DATA_MF[(mode_bis,fuel)].loc[t, columns_MF[10:][subrow]] = values[subrow-1]
+                    else:
+                        self.VEHICLES_DATA_MF[(mode_bis,fuel)].loc[int(t)] = 9*[0] + values
+                
+                col += 5
+        
+        # WARNING: fuel cost values inconsistent between table on right and left side of sheet input parameters 
+        # Values here: left table. Values after next section: right values
+        if True:
+            for row in range(1, ws.max_row+1):
+                if ws.cell(row, 9).value is None and row > 5:
+                    break
+                elif ws.cell(row, 9).value is not None:
+                    for key in self.VEHICLES_DATA_MF.keys(): # key = ("Road", "Battery") for example
+                        if ws.cell(row, 9).value in key or ws.cell(row, 9).value == "Electricity":
+                            for col in range(10, 100):
+                                if ws.cell(row, col).value is not None:
+                                    if ws.cell(row, 9).value == "Electricity" and key[0] != "Sea":
+                                        self.VEHICLES_DATA_MF[(key[0], "Battery")].loc[ws.cell(3, col).value, "Fuel Cost"] = ws.cell(row, col).value
+                                        if key[0] == "Rail":
+                                            self.VEHICLES_DATA_MF[(key[0], "Catenary")].loc[ws.cell(3, col).value, "Fuel Cost"] = ws.cell(row, col).value
+                                        # print(key, ws.cell(3, col).value, self.VEHICLES_DATA_MF[key].loc[ws.cell(3, col).value, "Fuel Cost"])
+                                    else:
+                                        self.VEHICLES_DATA_MF[key].loc[ws.cell(3, col).value, "Fuel Cost"] = ws.cell(row, col).value
+                                else:
+                                    break
+    
+        for (m,f) in taxes.keys():
+            self.VEHICLES_DATA_MF[(m,f)]["Fuel Cost"] = self.VEHICLES_DATA_MF[(m,f)]["Fuel Cost"]  + taxes[(m,f)]
+            
+        
+    @timeit
+    def construct_emission_transfer(self, transfer_data, CO2_fee_data, co2_fee):
+        
         #------------------------
         "Parameters part 1"
         #-----------------------      
-
-        cost_data = pd.read_excel(r'Data/cost_calculator.xlsx', sheet_name='Output costs')        
-        emission_data = pd.read_excel(r'Data/cost_calculator.xlsx', sheet_name='Output emissions')
-        time_value_data = pd.read_excel(r'Data/time_value.xlsx', sheet_name='Output')
-        speed_data = pd.read_excel(r'Data/time_value.xlsx', sheet_name='Speeds')
 
         #If this emission cap is too stringent, the problem becomes infeasible.
         self.EMISSION_CAP_RELATIVE = {2023: 100, 
                                       2026: 72.5, 
                                       2028: 60, 
                                       2030: 45, 
-                                      2034:40, 
+                                      2034: 40, 
                                       2040: 25, 
                                       2050: 10}  #note that the targets also are used for plotting purposes.
         self.EMISSION_CAP_ABSOLUTE_BASE_YEAR = None
         
-
-        transfer_data = pd.read_excel(r'Data/cost_calculator.xlsx', sheet_name='Transfer costs')
-
         self.TRANSFER_COST_PER_MODE_PAIR = {}   # transfer cost per origin mode, dest mode, product class
         self.VEHICLE_TRANSFER_TIME_IN_HARBOR = {}   # average time a ship/train (and thus the cargo) spends in a harbour/terminal for loading/unloading purposes
         self.CARGO_WAITING_TIME_TERMINAL = {}   # the average time that cargo waits at the terminal when in transit
@@ -567,10 +775,8 @@ class TransportSets():
                 self.TOTAL_TRANSFER_TIME[(dest, orig, prod_class)] = transf_time+waiting_time
         
 
-
         if True: 
             # read CO2 fee
-            CO2_fee_data = load_workbook(r'Data/cost_calculator.xlsx',data_only=True)["Parameter Input"]
             
             self.CO2_fee = {}     
             # for y in self.T_TIME_PERIODS:
@@ -625,87 +831,162 @@ class TransportSets():
         self.C_TIME_VALUE = {(i,j,m,r,p): COST_BIG_M for (i,j,m,r) in self.A_ARCS for p in self.P_PRODUCTS}   #UNIT: NOK/T
 
 
-        # read CO2 cost
-
-
         # read emissions
-        for index, row in emission_data.iterrows():
-            m = row["Mode"]
-            f = row["Fuel"]
-            if f in self.FM_FUEL[m]:
-                    pc = row["Product class"]
-                    # extract sigmoid parameters
-                    start_value = row["emissions 2023 (g/tkm)"]
-                    end_value = row["emissions 2050 (g/tkm)"]
-                    t_start = 2023  # HARDCODED
-                    t_end = 2050    # HARDCODED
-                    cur_mid = row["midway"]
-                    cur_a = row["a"]
-                    cur_k = row["k"]
-                    for p in self.PC_TO_P[pc]:
+        for m in self.M_MODES:
+            for f in self.FM_FUEL[m]:
+                for pc in self.PC_PRODUCT_CLASSES:
+                    if m != "Sea" or pc != "Liquid bulk":
+                        for p in self.PC_TO_P[pc]:
+                            for y in self.T_TIME_PERIODS:
+                                cur_val = 1000 * self.VEHICLES_DATA_MF[(m,f)].loc[y, "CO2 emission per km"] \
+                                    / (self.VEHICLES_DATA_MP[(m,pc)].loc[y, "Tonnage"]*self.VEHICLES_DATA_MP[(m,pc)].loc[y, "Market failure (av. utilization)"])
+                                self.E_EMISSIONS_NORMALIZED[(m,f,p,y)] = round(cur_val * self.scaling_factor_weight/self.scaling_factor_emissions,self.precision_digits)
+                    else:
                         for y in self.T_TIME_PERIODS:
-                            cur_val = sigmoid(y, start_value, end_value, t_start, t_end, cur_mid, cur_a, cur_k)
-                            self.E_EMISSIONS_NORMALIZED[(m,f,p,y)] = round(cur_val * self.scaling_factor_weight/self.scaling_factor_emissions,self.precision_digits)
+                            self.E_EMISSIONS_NORMALIZED[(m,f,pc,y)] = round(0 * self.scaling_factor_weight/self.scaling_factor_emissions,self.precision_digits)
+        
+        
         
         # process emissions per arc
-        for index, row in cost_data.iterrows():
-            for (i,j,m,r) in self.A_ARCS:
-                a = (i, j, m, r)
-                for f in self.FM_FUEL[m]:
-                    for p in self.P_PRODUCTS:
-                        for y in self.T_TIME_PERIODS:
-                            self.E_EMISSIONS[(i, j, m, r, f, p, y)] = round(self.AVG_DISTANCE[a] * self.E_EMISSIONS_NORMALIZED[(m,f,p,y)], self.precision_digits)
-                            #CO2 costs per tonne:
-                            self.C_CO2[(i, j, m, r, f, p, y)] =  round(self.E_EMISSIONS[(i, j, m, r, f, p, y)] * self.CO2_fee[y], self.precision_digits)
-
-
-
-        # read transport costs
-        for index, row in cost_data.iterrows():
-            for (i,j,m,r) in self.A_ARCS:
-                a = (i, j, m, r)
-                if m == row["Mode"]:
-                    f = row["Fuel"]
-                    if f in self.FM_FUEL[m]: 
-                        pc = row['Product class']
-                        for p in self.PC_TO_P[pc]:
-                            for y in self.T_TIME_PERIODS:    
-                                cost_euro = row[y] #euro/tkm
-                                cost = cost_euro*EXCHANGE_RATE_EURO_TO_NOK
-                                self.C_TRANSP_COST_NORMALIZED[(m,f,p,y)] = round(cost/self.scaling_factor_monetary*self.scaling_factor_weight,self.precision_digits)
-                                #compute base cost
-                                self.C_TRANSP_COST_BASE[(i, j, m, r, f, p, y)] = round((self.AVG_DISTANCE[a] * self.C_TRANSP_COST_NORMALIZED[(m,f,p,y)]), self.precision_digits) 
-                                #^: MINIMUM 6.7, , median = 114.8, 90%quantile = 2562.9,  max 9.6*10^7!!!
-                                self.E_EMISSIONS[(i, j, m, r, f, p, y)] = round(self.AVG_DISTANCE[a] * self.E_EMISSIONS_NORMALIZED[(m,f,p,y)], self.precision_digits)
-                                #CO2 costs per tonne:
-                                self.C_CO2[(i, j, m, r, f, p, y)] =  round(self.E_EMISSIONS[(i, j, m, r, f, p, y)] * self.CO2_fee[y], self.precision_digits)
-
+        for (i,j,m,r) in self.A_ARCS:
+            a = (i, j, m, r)
+            for f in self.FM_FUEL[m]:
+                for p in self.P_PRODUCTS:
+                    for y in self.T_TIME_PERIODS:
+                        self.E_EMISSIONS[(i, j, m, r, f, p, y)] = round(self.AVG_DISTANCE[a] * self.E_EMISSIONS_NORMALIZED[(m,f,p,y)], self.precision_digits)
+                        #CO2 costs per tonne:
+                        self.C_CO2[(i, j, m, r, f, p, y)] =  round(self.E_EMISSIONS[(i, j, m, r, f, p, y)] * self.CO2_fee[y], self.precision_digits)
         
-        # define transport cost for each scenario
-        for (i, j, m, r) in self.A_ARCS:
-                for f in self.FM_FUEL[m]:
-                    fg = self.F_TO_FG[f]
-                    for p in self.P_PRODUCTS:
-                        for y in self.T_TIME_PERIODS:
-                            for s in self.S_SCENARIOS:
-                                if y in self.T_TIME_FIRST_STAGE_BASE: #only update second-stage costs!
-                                    self.C_TRANSP_COST[(i, j, m, r, f, p, y,s)] = round(self.C_TRANSP_COST_BASE[(i, j, m, r, f, p, y)] * 1,self.precision_digits)
-                                elif y in self.T_TIME_SECOND_STAGE_BASE:
-                                #transport cost = base transport cost * cost factor for fuel group associated with (m,f) for current active scenario:
-                                    scen_nr = self.scenario_information.scen_name_to_nr[s]
-                                    fg_scen = self.scenario_information.fg_fuel_cost_path_name[scen_nr][fg] #  "B", "P" or "O"
-                                    pc = self.P_TO_PC[p]
-                                    self.C_TRANSP_COST[(i, j, m, r, f, p, y,s)] = round(self.C_TRANSP_COST_BASE[(i, j, m, r, f, p, y)] * 
-                                                                                        self.scenario_information.cost_factor[(fg_scen,t,m,pc,f)],
-                                                                                        #self.scenario_information.mode_fuel_cost_factor[self.scenario_information.scen_name_to_nr[s]][(m,f)],
-                                                                                        self.precision_digits) 
 
+    # @timeit
+    def get_cost_MFPA(self, f, p, a, y, TIMES_data=None):
+        (i, j, m, r) = a
+        
+        def equation(wacc, lifetime, capex):
+            return ((1+wacc)**int(lifetime))*wacc*capex/(((1+wacc)**int(lifetime))-1)
+        
+        cost_euro = 0 #euro/tkm
+        wacc = self.VEHICLES_DATA_MF[(m,f)].loc[y, "WACC"]
+        lt_veh = self.VEHICLES_DATA_MF[(m,f)].loc[y, "Lifetime vehicle"]
+        lt_cus = self.VEHICLES_DATA_MP[(m,p)].loc[y, "Lifetime costumization"]
+        tonnage = self.VEHICLES_DATA_MP[(m,p)].loc[y, "Tonnage"]
+        mileage = self.VEHICLES_DATA_MP[(m,p)].loc[y, "Annual Mileage"]
+        
+        fuel_cost_i = fuel_cost_j = self.VEHICLES_DATA_MF[(m,f)].loc[y, "Fuel Cost"]
+        # print(fuel_cost_i, self.VEHICLES_DATA_MF[(m,f)].loc[y, "Fuel Cost"])
+        p_i = p_j = 0.5
+        
+        if TIMES_data != None:
+            reg_i, p_i = self.sreg_to_treg[(m, i, j)][0]
+            reg_j, p_j = self.sreg_to_treg[(m, i, j)][1]
+            if p_i + p_j != 1:
+                raise Exception(f"fuel cost not totally accounted for: {p_i}, {p_j}, {reg_i}, {reg_j}")
+            
+            for n, reg_x in enumerate([reg_i, reg_j]):
+                if reg_x not in ["EUR", 0, "0", "SWE1", "SWE2", "SHE"]:
+                    if (f, m, reg_x, y) in TIMES_data.prices_TIMES_fmrp.keys() and not np.isnan(TIMES_data.prices_TIMES_fmrp[(f, m, reg_x, y)]):
+                        coeff = 1
+                        if n == 0:
+                            fuel_cost_i = TIMES_data.prices_TIMES_fmrp[(f, m, reg_i, y)] * coeff
+                            # print(fuel_cost_i/self.VEHICLES_DATA_MF[(m,f)].loc[y, "Fuel Cost"], self.VEHICLES_DATA_MF[(m,f)].loc[y, "Fuel Cost"], fuel_cost_i)
+                        elif n == 1:
+                            fuel_cost_j = TIMES_data.prices_TIMES_fmrp[(f, m, reg_j, y)] * coeff
+                            # print(fuel_cost_j/self.VEHICLES_DATA_MF[(m,f)].loc[y, "Fuel Cost"], self.VEHICLES_DATA_MF[(m,f)].loc[y, "Fuel Cost"], fuel_cost_j)
+                    # else:
+                    #     if y != 2023:
+                    #         print(f, m, reg_x, y, "NOT IN TIMES")
+                    #     if n == 0:
+                    #         fuel_cost_i = 1000000
+                    #     elif n == 1:
+                    #         fuel_cost_j = 1000000
+            self.df_cost.loc[len(self.df_cost.index)] = [reg_i, m, f, y, fuel_cost_i] 
+            self.df_cost.loc[len(self.df_cost.index)] = [reg_j, m, f, y, fuel_cost_j]                         
+        cost_euro += equation(wacc, lt_veh, self.VEHICLES_DATA_MF[(m,f)].loc[y, "Capex vehicle"])
+        cost_euro += equation(wacc, lt_veh, self.VEHICLES_DATA_MF[(m,f)].loc[y, "Residual value (vehicle)"])
+        cost_euro += equation(wacc, lt_cus, self.VEHICLES_DATA_MP[(m,p)].loc[y, "Capex costumization"])
+        cost_euro += equation(wacc, lt_cus, self.VEHICLES_DATA_MP[(m,p)].loc[y, "Residual value (costumization)"])
+        cost_euro += self.VEHICLES_DATA_MP[(m,p)].loc[y, "Opex fix (admin, crew, insurance)"]
+        cost_euro += self.VEHICLES_DATA_MF[(m,f)].loc[y, "Opex maintenance & repair"]
+        cost_euro += self.VEHICLES_DATA_MP[(m,p)].loc[y, "Opex var (mode-fees)"]*mileage
+        cost_euro += self.VEHICLES_DATA_MF[(m,f)].loc[y, "Emission cost"]*mileage
+        cost_euro += self.VEHICLES_DATA_MF[(m,f)].loc[y, "Fuel Economy"]\
+                        *(fuel_cost_i * p_i + fuel_cost_j * p_j) * mileage
+        
+        if False:
+            false_cost_euro = cost_euro-2*equation(wacc, lt_cus, self.VEHICLES_DATA_MP[(m,p)].loc[y, "Residual value (costumization)"])
+        else:
+            false_cost_euro = cost_euro
+        
+        cost_euro_per_t_km = cost_euro/(mileage*tonnage)
+        cost_euro_per_t_km += false_cost_euro*(1/self.VEHICLES_DATA_MP[(m,p)].loc[y, "Market failure (av. utilization)"] - 1)/(mileage*tonnage)
+        cost_euro_per_t_km += false_cost_euro*(1/(1-self.VEHICLES_DATA_MF[(m,f)].loc[y, "Payload loss (fuel)"]) - 1)/(mileage*tonnage)
+
+        return cost_euro_per_t_km #euro/tkm
+    
+    @timeit
+    def construct_costs(self, param_input, conv_file, TIMES_data=None):
+        # read transport costs
+        
+        self.df_cost = pd.DataFrame(columns=["region", "mode", 'fuel', "year","price"])
+        
+        
+        self.sreg_to_treg = dict()
+        for (i,j,m,r) in self.A_ARCS:
+            a = (i, j, m, r)
+            if TIMES_data is not None:
+                n_i = self.centroid_to_nr[i]
+                n_j = self.centroid_to_nr[j]
+                for index, row in conv_file.iterrows():
+                    if row["Mode"] == m:
+                        if row["From"] == n_i and row["To"] == n_j:
+                            self.sreg_to_treg[(m, i, j)] = [[row["z1"], row["p1"]],
+                                                            [row["z2"], row["p2"]]]
+                            break
+                        elif row["From"] == n_j and row["To"] == n_i:
+                            self.sreg_to_treg[(m, i, j)] = [[row["z2"], row["p2"]],
+                                                            [row["z1"], row["p1"]]]
+                            break
+            
+            for f in self.FM_FUEL[m]:
+                fg = self.F_TO_FG[f]
+                                
+                for p in self.P_PRODUCTS:
+                    for y in self.T_TIME_PERIODS:   
+                        cost_euro = self.get_cost_MFPA(f,self.P_TO_PC[p], a, y, TIMES_data)
+                        # if f == "Hydrogen" and m == "Road":
+                        #     print(p, y, a, cost_euro)
+                        # if f == "Battery" and m == "Road":
+                        #     print(p, y, a, cost_euro)
+                        cost = cost_euro*EXCHANGE_RATE_EURO_TO_NOK
+                        self.C_TRANSP_COST_NORMALIZED[(m,f,p,y)] = round(cost/self.scaling_factor_monetary*self.scaling_factor_weight,self.precision_digits)
+                        #compute base cost
+                        self.C_TRANSP_COST_BASE[(i, j, m, r, f, p, y)] = round((self.AVG_DISTANCE[a] * self.C_TRANSP_COST_NORMALIZED[(m,f,p,y)]), self.precision_digits) 
+                        #^: MINIMUM 6.7, , median = 114.8, 90%quantile = 2562.9,  max 9.6*10^7!!!
+                        # self.E_EMISSIONS[(i, j, m, r, f, p, y)] = round(self.AVG_DISTANCE[a] * self.E_EMISSIONS_NORMALIZED[(m,f,p,y)], self.precision_digits)
+                        # #CO2 costs per tonne:
+                        # self.C_CO2[(i, j, m, r, f, p, y)] =  round(self.E_EMISSIONS[(i, j, m, r, f, p, y)] * self.CO2_fee[y], self.precision_digits)
+                        
+                        for s in self.S_SCENARIOS: # define transport cost for each scenario
+                            if y in self.T_TIME_FIRST_STAGE_BASE: #only update second-stage costs!
+                                self.C_TRANSP_COST[(i, j, m, r, f, p, y, s)] = round(self.C_TRANSP_COST_BASE[(i, j, m, r, f, p, y)] * 1,self.precision_digits)
+                            elif y in self.T_TIME_SECOND_STAGE_BASE:
+                            #transport cost = base transport cost * cost factor for fuel group associated with (m,f) for current active scenario:
+                                scen_nr = self.scenario_information.scen_name_to_nr[s]
+                                fg_scen = self.scenario_information.fg_fuel_cost_path_name[scen_nr][fg] #  "B", "P" or "O"
+                                pc = self.P_TO_PC[p]
+                                self.C_TRANSP_COST[(i, j, m, r, f, p, y, s)] = round(self.C_TRANSP_COST_BASE[(i, j, m, r, f, p, y)] * 
+                                                                                    self.scenario_information.cost_factor[(fg_scen,y,m,pc,f)],
+                                                                                    #self.scenario_information.mode_fuel_cost_factor[self.scenario_information.scen_name_to_nr[s]][(m,f)],
+                                                                                    self.precision_digits)
+                        
+                        
+    @timeit
+    def construct_time_value(self, time_value_data, speed_data):
         # read time values
         for index, row in time_value_data.iterrows():
             self.TIME_VALUE_PER_TH[row["Product group"]] = round(row["Time value (EUR/th)"]*EXCHANGE_RATE_EURO_TO_NOK/
                                                                  self.scaling_factor_monetary*self.scaling_factor_weight,self.precision_digits)
         
-
         # read mode speeds
         for index, row in speed_data.iterrows():
             self.SPEED[row["Mode"]] = row["Speed (km/h)"]
@@ -716,16 +997,14 @@ class TransportSets():
                 travel_time = (self.DISTANCE[(i,j,m,r)] / self.SPEED[m]) 
                 #terminal_time = self.TIME_IN_TERMINAL[m]   
                 self.C_TIME_VALUE[(i,j,m,r,p)] = round((travel_time)*self.TIME_VALUE_PER_TH[p],self.precision_digits)  # dist / speed * cost per hour
-               
+                
+    @timeit                                         
+    def construct_investments(self, node_cap_data, edge_cap_data):
+            
         #################
         #  INVESTMENTS  #
         #################
         
-        node_cap_data = pd.read_excel(r'Data/capacities_and_investments.xlsx', sheet_name='node_capacities')
-        edge_cap_data = pd.read_excel(r'Data/capacities_and_investments.xlsx', sheet_name='edge_capacities')
-
-
-
         # Edge upgrades
         self.E_EDGES_INV = []           # list of edges that can be invested in, i.e., that are capacitated
         self.E_EDGES_UPG = []           # list of upgradeable edges
@@ -748,7 +1027,6 @@ class TransportSets():
             self.U_UPGRADE.append((e,'Catenary'))            # HARDCODED
 
 
-    
         # Initialize capacities, investments, and costs
 
         # edges
@@ -823,14 +1101,11 @@ class TransportSets():
         self.risk_free_interest_rate = RISK_FREE_RATE # 2%
         self.D_DISCOUNT_RATE = round(1 / (1 + self.risk_free_interest_rate),self.precision_digits)
         
-        
-        # --------------------------
+    @timeit
+    def construct_charging_edges(self, charging_data):
         # --------------------------
         # CHARGING EDGES CONSTRAINT
         # --------------------------
-        # --------------------------
-        
-        charging_data = pd.read_excel(r'Data/capacities_and_investments.xlsx', sheet_name='charging_data')
         
         self.CHARGING_TECH = []
         T_TIME_PERIODS_CHARGING = set()
@@ -849,8 +1124,6 @@ class TransportSets():
                     if e[2] == m:
                         self.EF_CHARGING.append((e,f))
         
-        
-
         # base capacity on a pair of arcs (ij/ji - mfr), fix to 0 since no charging infrastructure exists now
         self.Q_CHARGE_BASE = {(e,f): 0 for (e,f) in self.EF_CHARGING }
         self.C_CHARGE = {(e,f,t): 100000 for (e,f) in self.EF_CHARGING for t in T_TIME_PERIODS_CHARGING}  # for p in self.P_PRODUCTS}  
@@ -869,13 +1142,14 @@ class TransportSets():
                                             self.precision_digits)  # 0.7 or not??? MKR/TONNES, 
                 #self.LEAD_TIME_CHARGING[(e,f,t)] = data_index.iloc[0]["Ledetid_year"]
 
-
+    @timeit
+    def construct_tech_readiness(self, tech_readiness_data, phase_out_data, init_transport_share, init_mode_share):
         ##################################
         #    Technological readiness
         ##################################
 
         #Technological readiness/maturity (with Bass diffusion model)
-        tech_readiness_data = pd.read_excel(r'Data/technological_maturity_readiness.xlsx',sheet_name="technological_readiness_bass") #new sheet with different readiness paths
+        
         self.tech_is_mature = {} # indicates whether technology is already mature
         self.tech_base_bass_model = {} # contains all bass diffusion models for the technologies (only for non-mature technologies)
         self.tech_active_bass_model = {} # active bass model (only for non-mature technologies)
@@ -908,20 +1182,15 @@ class TransportSets():
                         self.R_TECH_READINESS_MATURITY[(m, f, year,s)] = round(self.tech_base_bass_model[(m,f)].A(year),self.precision_digits) # compute maturity level based on base Bass diffusion model 
         
         #Phase out technologies
-        phase_out_data = pd.read_excel(r'Data/technological_maturity_readiness.xlsx',sheet_name="phase_out_fuels") 
         self.PHASE_OUT = {}
         for index, row in phase_out_data.iterrows():
             m=row["Mode"]
             f=row["Fuel"]
             t=row["Time period"]
             self.PHASE_OUT[(m,f,t)] = row["Restriction"]
-            
-            
-
-
 
         #Initializing transport work share in base year
-        init_transport_share = pd.read_excel(r'Data/init_mode_fuel_mix.xlsx',sheet_name="init_fuel_mix")
+        
         self.Q_SHARE_INIT_MAX = {}
         self.MFT_INIT_TRANSP_SHARE = []
         for index, row in init_transport_share.iterrows():
@@ -929,7 +1198,7 @@ class TransportSets():
             self.Q_SHARE_INIT_MAX[(m,f,t)] = round(row['Max_transp_share'],self.precision_digits)
             self.MFT_INIT_TRANSP_SHARE.append((m,f,t))
 
-        init_mode_share = pd.read_excel(r'Data/init_mode_fuel_mix.xlsx',sheet_name="init_mode_mix")
+        
         self.INIT_MODE_SPLIT = {m:None for m in self.M_MODES}
         for index, row in init_mode_share.iterrows():
             (mm,share) = (row['Mode'], row['Share'])
@@ -997,6 +1266,8 @@ class TransportSets():
                             self.tech_active_bass_model[(m,f,s)] = self.tech_base_bass_model[(m,f)]
 
 
+    @timeit
+    def construct_path_generation(self, path):
         #----------------------------------------
         #      PATH GENERATION
         #-----------------------------------------
@@ -1004,9 +1275,7 @@ class TransportSets():
         self.K_PATHS = []
 
         #from Data.settings import *
-
-        filename = r'generated_paths_'+str(NUM_MODE_PATHS)+'_modes.pkl'
-        path = r'Data/SPATIAL/'+filename
+        
         if not os.path.exists(path):         
             path_generation(
                     products=self.P_PRODUCTS, 
@@ -1023,7 +1292,6 @@ class TransportSets():
                     mode_to_fuels=self.FM_FUEL,           
                     mode_comb_level=NUM_MODE_PATHS         
                     )
-
 
         #import ast
         #all_generated_paths = pd.read_csv(r'Data/SPATIAL/'+filename, converters={'paths': ast.literal_eval})  #, converters={'paths': eval}        #This provides an encoding error
@@ -1104,7 +1372,31 @@ class TransportSets():
                 a = (i,j,m,r)
                 self.KA_PATHS_UNIMODAL[a].append(kk)
         
+        self.FM_MULTI = {}
+        for m1 in self.M_MODES:
+            self.FM_MULTI[(m1,m1)] = []
+            for f1 in self.FM_FUEL[m1]:
+                self.FM_MULTI[(m1,m1)].append((f1,f1))
+            for m2 in self.M_MODES:
+                if m1 != m2:
+                    self.FM_MULTI[(m1,m2)] = []
+                    for f1 in self.FM_FUEL[m1]:
+                        for f2 in self.FM_FUEL[m2]:
+                            self.FM_MULTI[(m1,m2)].append((f1, f2))
+        # For each modes combination, we have a list of possible fuel combination
+        # Ex: self.FM_MULTI[("Road", "Rail")] = [("Diesel", "Catenary"), ("Diesel", "Battery"), ..., ("Hydrogen", "Catenary"),("Hydrogen", "Battery"), ...]
+        self.FM_MULTI_K = {}
+        for k in self.K_PATHS:
+            result = [i[2] for i in self.K_PATH_DICT[k]]
+            modes = [] 
+            [modes.append(x) for x in result if x not in modes] 
+            modes = tuple(modes)
+            if len(modes) == 1:
+                modes = modes + modes
+            self.FM_MULTI_K[k] = self.FM_MULTI[modes]
 
+    @timeit
+    def construct_param2(self):
         #----------------------------------------
         #      Parameters part 2
         #-----------------------------------------
@@ -1152,9 +1444,9 @@ class TransportSets():
         #if EMISSION_CONSTRAINT:
         #    emission_cap_data = pd.read_excel(r'Data/transport_costs_emissions_raw.xlsx', sheet_name='emission_cap')
 
-            
-    def combined_sets(self):
-
+    
+    @timeit
+    def combined_sets(self, TIMES_data=None):
 
         if True:  #Q: is this still necessary? Or can we remove this
         
@@ -1256,8 +1548,10 @@ class TransportSets():
                          self.T_TIME_PERIODS ]
         self.AFVT = [(i,j,m,r) + (f,) + (v,) + (t,) for (i,j,m,r) in self.A_ARCS for f in self.FM_FUEL[m] for v in self.VEHICLE_TYPES_M[m] for t in
                          self.T_TIME_PERIODS ]  
-        self.KPT = [(k, p, t) for k in self.K_PATHS for p in self.P_PRODUCTS for t in self.T_TIME_PERIODS]
+        self.KPT = [(k, p, t) for k in self.K_PATHS for p in self.P_PRODUCTS for t in self.T_TIME_PERIODS]        
         self.KVT = [(k, v, t) for k in self.K_PATHS for v in self.V_VEHICLE_TYPES for t in self.T_TIME_PERIODS]
+        self.K_uni_VT = [(k, v, t) for k in self.UNI_MODAL_PATHS for v in self.V_VEHICLE_TYPES for t in self.T_TIME_PERIODS]
+
         self.ET_INV = [l+(t,) for l in self.E_EDGES_INV for t in self.T_TIME_PERIODS                                   if (t <= self.T_TIME_PERIODS[-1] - self.LEAD_TIME_EDGE_INV[l]) and (t in self.T_TIME_FIRST_STAGE)]
         self.EAT_INV = [e+(a,)+(t,) for e in self.E_EDGES_INV for a in self.AE_ARCS[e] for t in self.T_TIME_PERIODS   if (t <= self.T_TIME_PERIODS[-1] - self.LEAD_TIME_EDGE_INV[e]) and (t in self.T_TIME_FIRST_STAGE)]
         self.EAT_INV_CONSTR = [e+(a,)+(t,) for e in self.E_EDGES_INV for a in self.AE_ARCS[e] for t in self.T_TIME_PERIODS_OPERATIONAL]        
@@ -1319,6 +1613,7 @@ class TransportSets():
         self.ET_INV_S = combinations(self.ET_INV,self.S_SCENARIOS)
         self.KPT_S = combinations(self.KPT,self.S_SCENARIOS)
         self.KVT_S = combinations(self.KVT,self.S_SCENARIOS)
+        self.K_uni_VT_S = combinations(self.K_uni_VT,self.S_SCENARIOS)
         self.NM_CAP_S = combinations(self.NM_CAP,self.S_SCENARIOS)
         self.NM_CAP_T_CONSTR_S = combinations(self.NM_CAP_T_CONSTR,self.S_SCENARIOS)
         self.NM_CAP_T_S = combinations(self.NM_CAP_T,self.S_SCENARIOS)
@@ -1364,7 +1659,54 @@ class TransportSets():
                                 lowest_cost = self.C_TRANSP_COST_NORMALIZED[(m,f,p,t)]
                                 cheapest_product = p
                         self.cheapest_product_per_vehicle[(m,f,t,v)] = cheapest_product
-
+        
+        self.KFPT = []
+        self.KFPT_S = []
+        # for k,p,t in self.KPT:
+        #     result = [i[2] for i in self.K_PATH_DICT[k]]
+        #     modes = [] 
+        #     [modes.append(x) for x in result if x not in modes] 
+        #     modes = tuple(modes)
+        #     if len(modes) == 1:
+        #         modes = modes + modes
+        #     for fuels in self.FM_MULTI[modes]:
+        #         for s in self.S_SCENARIOS:
+        #             self.KFPT_S.append((k,) + (fuels,) + (p,) + (t,) + (s,))
+        #         self.KFPT.append((k,) + (fuels,) + (p,) + (t,))
+        # For each old k,p,t,s combination, we combine with all the possible fuel combination of the modes of k
+        # Ex: k = (("Hamar", "Trondheim", "Rail", 1), ("Trondheim", "Bodø", "Rail", 1), ("Bodø", "Narvik", "Road", 1))
+        # the combination of fuels are self.FM_MULTI[("Rail", "Road")], with N elements
+        # we have N new (k,fuels) combination
+        self.KFVT = []
+        self.K_uni_FVT = []
+        self.KFVT_S = []
+        self.K_uni_FVT_S = []
+        
+        if TIMES_data is not None:
+            for t in self.T_TIME_PERIODS:
+                for k_uni in self.UNI_MODAL_PATHS:
+                    for fuels in self.FM_MULTI_K[k_uni]:
+                        for v in self.V_VEHICLE_TYPES:
+                            self.K_uni_FVT.append((k_uni,) + (fuels,) + (v,) + (t,))
+                            self.KFVT.append((k_uni,) + (fuels,) + (v,) + (t,))
+                            for s in self.S_SCENARIOS:
+                                self.K_uni_FVT_S.append((k_uni,) + (fuels,) + (v,) + (t,) + (s,))
+                                self.KFVT_S.append((k_uni,) + (fuels,) + (v,) + (t,) + (s,))
+                        for p in self.P_PRODUCTS:
+                            for s in self.S_SCENARIOS:
+                                self.KFPT_S.append((k_uni,) + (fuels,) + (p,) + (t,) + (s,))
+                            self.KFPT.append((k_uni,) + (fuels,) + (p,) + (t,))
+                            
+                for k_multi in self.MULTI_MODE_PATHS:
+                    for fuels in self.FM_MULTI_K[k_multi]:
+                        for v in self.V_VEHICLE_TYPES:
+                            for s in self.S_SCENARIOS:
+                                self.KFVT_S.append((k_multi,) + (fuels,) + (v,) + (t,) + (s,))
+                            self.KFVT.append((k_multi,) + (fuels,) + (v,) + (t,))
+                        for p in self.P_PRODUCTS:
+                            for s in self.S_SCENARIOS:
+                                self.KFPT_S.append((k_multi,) + (fuels,) + (p,) + (t,) + (s,))
+                            self.KFPT.append((k_multi,) + (fuels,) + (p,) + (t,))
 
 
 print("Finished reading sets and classes.")
